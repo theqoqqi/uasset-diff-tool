@@ -1,8 +1,6 @@
 ﻿using UAssetAPI;
 using UAssetAPI.UnrealTypes;
 
-using static UassetComparisonTool.UassetUtils;
-
 namespace UassetComparisonTool;
 
 internal static class Program {
@@ -30,12 +28,11 @@ internal static class Program {
     }
 
     private static void CompareFiles(string fileA, string fileB) {
-        var diffFinder = new BlueprintDiffFinder();
         var assetA = new UAsset(fileA, EngineVersion.VER_UE4_27);
         var assetB = new UAsset(fileB, EngineVersion.VER_UE4_27);
+        var assetDiffFinder = new AssetDiffFinder();
 
-        Console.WriteLine($"Comparing files:\n  A: {fileA}\n  B: {fileB}\n");
-        diffFinder.FindDiff(assetA, assetB);
+        assetDiffFinder.FindDiffs("", assetA, assetB);
     }
 
     private static void CompareDirectories(string dirA, string dirB) {
@@ -47,30 +44,10 @@ internal static class Program {
         foreach (var relPath in allKeys) {
             var assetA = GetUAsset(relPath, filesA);
             var assetB = GetUAsset(relPath, filesB);
+            var assetDiffFinder = new AssetDiffFinder();
 
-            FindDiffs(relPath, assetA, assetB);
+            assetDiffFinder.FindDiffs(relPath, assetA, assetB);
         }
-    }
-
-    private static void FindDiffs(string assetName, UAsset? assetA, UAsset? assetB) {
-        if (assetA is null) {
-            Console.WriteLine($"Has been added: {assetName}");
-            return;
-        }
-
-        if (assetB is null) {
-            Console.WriteLine($"Has been removed: {assetName}");
-            return;
-        }
-
-        if (!HasBlueprints(assetA) || !HasBlueprints(assetB)) {
-            return;
-        }
-        
-        var diffFinder = new BlueprintDiffFinder();
-        
-        Console.WriteLine($"\n=== Asset: {assetName} ===");
-        diffFinder.FindDiff(assetA, assetB);
     }
     
     private static UAsset? GetUAsset(string relPath, Dictionary<string, string> files) {
