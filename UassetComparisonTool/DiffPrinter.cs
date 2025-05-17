@@ -13,6 +13,12 @@ public class DiffPrinter {
         FilteredDiffTypes = filteredDiffTypes;
     }
 
+    public void PrintDiffs(IEnumerable<AssetDiff> assetDiffs) {
+        foreach (var assetDiff in assetDiffs) {
+            PrintDiff(assetDiff);
+        }
+    }
+
     public void PrintDiff(AssetDiff assetDiff) {
         if (!FilteredDiffTypes.Contains(assetDiff.DiffType)) {
             return;
@@ -35,6 +41,8 @@ public class DiffPrinter {
                 PrintFunctionDiff(fd, 2);
             }
         }
+        
+        Writer.Flush();
     }
 
     private void PrintPropertyDiff(PropertyDiff diff, int indent) {

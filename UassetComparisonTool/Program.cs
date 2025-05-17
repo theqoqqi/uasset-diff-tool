@@ -54,14 +54,14 @@ internal static class Program {
         var diffPrinter = new DiffPrinter(writer, diffTypes);
 
         if (Directory.Exists(pathA) && Directory.Exists(pathB)) {
-            CompareDirectories(diffPrinter, pathA, pathB);
-            writer.Flush();
+            var assetDiffs = CompareDirectories(pathA, pathB);
+
+            diffPrinter.PrintDiffs(assetDiffs.Values);
             return;
         }
 
         if (File.Exists(pathA) && File.Exists(pathB)) {
-            CompareFiles(diffPrinter, pathA, pathB);
-            writer.Flush();
+            diffPrinter.PrintDiff(CompareFiles(pathA, pathB));
             return;
         }
 
@@ -78,32 +78,37 @@ internal static class Program {
         };
     }
 
-    private static void CompareFiles(DiffPrinter diffPrinter, string fileA, string fileB) {
+    private static AssetDiff CompareFiles(string fileA, string fileB) {
         var assetA = new UAsset(fileA, EngineVersion.VER_UE4_27);
         var assetB = new UAsset(fileB, EngineVersion.VER_UE4_27);
         var context = DiffContext.From(assetA, assetB);
         var nameA = Path.GetFileNameWithoutExtension(fileA);
         var nameB = Path.GetFileNameWithoutExtension(fileB);
         var assetName = nameA == nameB ? nameA : $"{nameA} => {nameB}";
-        var assetDiff = AssetDiff.Create(context, assetName, assetA, assetB);
 
-        diffPrinter.PrintDiff(assetDiff);
+        return AssetDiff.Create(context, assetName, assetA, assetB);
     }
 
-    private static void CompareDirectories(DiffPrinter diffPrinter, string dirA, string dirB) {
+    private static Dictionary<string, AssetDiff> CompareDirectories(string dirA, string dirB) {
         var filesA = GetUassetPaths(dirA);
         var filesB = GetUassetPaths(dirB);
-
         var allKeys = filesA.Keys.Union(filesB.Keys).OrderBy(k => k);
 
-        foreach (var relPath in allKeys) {
-            var assetA = GetUAsset(relPath, filesA);
-            var assetB = GetUAsset(relPath, filesB);
-            var context = DiffContext.From(assetA, assetB);
-            var assetDiff = AssetDiff.Create(context, relPath, assetA, assetB);
+        return allKeys
+                .Select(relPath => GetAssetDiff(relPath, filesA, filesB))
+                .ToDictionary(diff => diff.Name);
+    }
 
-            diffPrinter.PrintDiff(assetDiff);
-        }
+    private static AssetDiff GetAssetDiff(
+            string relPath,
+            Dictionary<string, string> filesA,
+            Dictionary<string, string> filesB
+    ) {
+        var assetA = GetUAsset(relPath, filesA);
+        var assetB = GetUAsset(relPath, filesB);
+        var context = DiffContext.From(assetA, assetB);
+
+        return AssetDiff.Create(context, relPath, assetA, assetB);
     }
 
     private static UAsset? GetUAsset(string relPath, Dictionary<string, string> files) {
