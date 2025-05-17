@@ -23,6 +23,11 @@ internal static class Program {
             description: "If set, write diff to this file; otherwise write to console."
     ).ExistingOrCreateableFile();
 
+    private static readonly Option<FileInfo?> FilterByDeps = new Option<FileInfo?>(
+            aliases: ["--filter-by-deps", "-D"],
+            description: "Only show diffs for assets listed in this dependency file."
+    ).LegalFilePathsOnly();
+
     private static readonly Option<DiffType[]> DiffTypes = new Option<DiffType[]>(
             aliases: ["--diff-types", "-d"],
             getDefaultValue: () => [
@@ -40,23 +45,31 @@ internal static class Program {
             PathA,
             PathB,
             OutputPath,
+            FilterByDeps,
             DiffTypes
     };
 
     private static async Task<int> Main(string[] args) {
-        Command.SetHandler(RunComparison, PathA, PathB, OutputPath, DiffTypes);
+        Command.SetHandler(RunComparison, PathA, PathB, OutputPath, FilterByDeps, DiffTypes);
 
         return await Command.InvokeAsync(args);
     }
 
-    private static void RunComparison(string pathA, string pathB, string? outputPath, DiffType[] diffTypes) {
+    private static void RunComparison(
+            string pathA,
+            string pathB,
+            string? outputPath,
+            FileInfo? filterByDeps,
+            DiffType[] diffTypes
+    ) {
         var writer = GetWriter(outputPath);
         var diffPrinter = new DiffPrinter(writer, diffTypes);
 
         if (Directory.Exists(pathA) && Directory.Exists(pathB)) {
             var assetDiffs = CompareDirectories(pathA, pathB);
+            var filteredAssetDiffs = FilterAssetDiffs(assetDiffs, filterByDeps);
 
-            diffPrinter.PrintDiffs(assetDiffs.Values);
+            diffPrinter.PrintDiffs(filteredAssetDiffs.Values);
             return;
         }
 
@@ -66,6 +79,21 @@ internal static class Program {
         }
 
         Console.WriteLine("Both arguments must be either existing files or existing directories.");
+    }
+
+    private static Dictionary<string, AssetDiff> FilterAssetDiffs(
+            Dictionary<string, AssetDiff> assetDiffs,
+            FileSystemInfo? filterByDeps
+    ) {
+        if (filterByDeps == null) {
+            return assetDiffs;
+        }
+
+        var allowedPaths = ParseDependencyFile(filterByDeps.FullName);
+
+        return assetDiffs
+                .Where(pair => allowedPaths.Contains(pair.Key))
+                .ToDictionary();
     }
 
     private static TextWriter GetWriter(string? outputPath) {
@@ -109,6 +137,23 @@ internal static class Program {
         var context = DiffContext.From(assetA, assetB);
 
         return AssetDiff.Create(context, shortPath, assetA, assetB);
+    }
+
+    private static HashSet<string> ParseDependencyFile(string filePath) {
+        var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var line in File.ReadLines(filePath)) {
+            var trimmed = line.Trim();
+
+            if (trimmed.StartsWith("/Game/") && !trimmed.StartsWith("/Game/Mods/")) {
+                var withoutPrefix = trimmed.Substring("/Game/".Length);
+                var withoutExtension = withoutPrefix.Split('.')[0];
+
+                result.Add(withoutExtension);
+            }
+        }
+
+        return result;
     }
 
     private static UAsset? GetUAsset(string shortPath, Dictionary<string, string> files) {
