@@ -37,15 +37,16 @@ internal static class Program {
 
     private static void RunComparison(string pathA, string pathB, string? outputPath) {
         var writer = GetWriter(outputPath);
+        var diffPrinter = new DiffPrinter(writer);
 
         if (Directory.Exists(pathA) && Directory.Exists(pathB)) {
-            CompareDirectories(writer, pathA, pathB);
+            CompareDirectories(diffPrinter, pathA, pathB);
             writer.Flush();
             return;
         }
 
         if (File.Exists(pathA) && File.Exists(pathB)) {
-            CompareFiles(writer, pathA, pathB);
+            CompareFiles(diffPrinter, pathA, pathB);
             writer.Flush();
             return;
         }
@@ -63,8 +64,7 @@ internal static class Program {
         };
     }
 
-    private static void CompareFiles(TextWriter writer, string fileA, string fileB) {
-        var diffPrinter = new DiffPrinter(writer);
+    private static void CompareFiles(DiffPrinter diffPrinter, string fileA, string fileB) {
         var assetA = new UAsset(fileA, EngineVersion.VER_UE4_27);
         var assetB = new UAsset(fileB, EngineVersion.VER_UE4_27);
         var context = DiffContext.From(assetA, assetB);
@@ -76,8 +76,7 @@ internal static class Program {
         diffPrinter.PrintDiff(assetDiff);
     }
 
-    private static void CompareDirectories(TextWriter writer, string dirA, string dirB) {
-        var diffPrinter = new DiffPrinter(writer);
+    private static void CompareDirectories(DiffPrinter diffPrinter, string dirA, string dirB) {
         var filesA = GetUassetPaths(dirA);
         var filesB = GetUassetPaths(dirB);
 
