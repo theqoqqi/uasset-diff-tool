@@ -24,6 +24,11 @@ internal static class Program {
             description: "If set, write diff to this file; otherwise write to console."
     ).ExistingOrCreateableFile();
 
+    private static readonly Option<FileInfo?> RenamedFiles = new Option<FileInfo?>(
+            aliases: ["--renamed-files", "-r"],
+            description: "File with old->new asset path mappings (space separated)."
+    ).LegalFilePathsOnly();
+
     private static readonly Option<FileInfo?> FilterByDeps = new Option<FileInfo?>(
             aliases: ["--filter-by-deps", "-D"],
             description: "Only show diffs for assets listed in this dependency file."
@@ -51,6 +56,7 @@ internal static class Program {
             PathA,
             PathB,
             OutputPath,
+            RenamedFiles,
             FilterByDeps,
             DiffTypes,
             BlueprintsOnly
@@ -62,6 +68,7 @@ internal static class Program {
                 PathA,
                 PathB,
                 OutputPath,
+                RenamedFiles,
                 FilterByDeps,
                 DiffTypes,
                 BlueprintsOnly
@@ -74,15 +81,17 @@ internal static class Program {
             string pathA,
             string pathB,
             string? outputPath,
+            FileInfo? renamedFiles,
             FileInfo? filterByDeps,
             DiffType[] diffTypes,
             bool blueprintsOnly
     ) {
+        var renameMap = ParseRenamedFiles(renamedFiles);
         var writer = GetWriter(outputPath);
         var diffPrinter = new DiffPrinter(writer, diffTypes);
 
         if (Directory.Exists(pathA) && Directory.Exists(pathB)) {
-            var assetDiffs = CompareDirectories(pathA, pathB, blueprintsOnly);
+            var assetDiffs = CompareDirectories(pathA, pathB, renameMap, blueprintsOnly);
             var filteredAssetDiffs = FilterAssetDiffs(assetDiffs, filterByDeps);
 
             diffPrinter.PrintDiffs(filteredAssetDiffs.Values);
@@ -95,6 +104,27 @@ internal static class Program {
         }
 
         Console.WriteLine("Both arguments must be either existing files or existing directories.");
+    }
+
+    private static Dictionary<string, string> ParseRenamedFiles(FileInfo? renamedFiles) {
+        if (renamedFiles is null) {
+            return new Dictionary<string, string>();
+        }
+
+        var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var line in File.ReadLines(renamedFiles.FullName)) {
+            var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length >= 2) {
+                var oldKey = GetShortAssetPath(parts[0]);
+                var newKey = GetShortAssetPath(parts[1]);
+
+                map[oldKey] = newKey;
+            }
+        }
+
+        return map;
     }
 
     private static Dictionary<string, AssetDiff> FilterAssetDiffs(
@@ -133,13 +163,18 @@ internal static class Program {
         return AssetDiff.Create(context, assetName, assetA, assetB);
     }
 
-    private static Dictionary<string, AssetDiff> CompareDirectories(string dirA, string dirB, bool blueprintsOnly) {
+    private static Dictionary<string, AssetDiff> CompareDirectories(
+            string dirA,
+            string dirB,
+            Dictionary<string, string> renameMap,
+            bool blueprintsOnly
+    ) {
         var filesA = GetUassetPaths(dirA);
         var filesB = GetUassetPaths(dirB);
         var allKeys = filesA.Keys.Union(filesB.Keys).OrderBy(k => k);
 
         return allKeys
-                .Select(shortPath => GetAssetDiff(shortPath, filesA, filesB, blueprintsOnly))
+                .Select(shortPath => GetAssetDiff(shortPath, filesA, filesB, renameMap, blueprintsOnly))
                 .OfType<AssetDiff>()
                 .ToDictionary(diff => diff.Name);
     }
@@ -148,11 +183,18 @@ internal static class Program {
             string shortPath,
             Dictionary<string, string> filesA,
             Dictionary<string, string> filesB,
+            Dictionary<string, string> renameMap,
             bool blueprintsOnly
     ) {
-        var assetA = GetUAsset(shortPath, filesA);
-        var assetB = GetUAsset(shortPath, filesB);
-        var context = DiffContext.From(assetA, assetB, shortPath, shortPath);
+        if (renameMap.ContainsValue(shortPath)) {
+            return null;
+        }
+
+        var shortPathA = shortPath;
+        var shortPathB = renameMap.GetValueOrDefault(shortPath, shortPath);
+        var assetA = GetUAsset(shortPathA, filesA);
+        var assetB = GetUAsset(shortPathB, filesB);
+        var context = DiffContext.From(assetA, assetB, shortPathA, shortPathB);
 
         if (blueprintsOnly && !(HasBlueprints(assetA) || HasBlueprints(assetB))) {
             return null;
