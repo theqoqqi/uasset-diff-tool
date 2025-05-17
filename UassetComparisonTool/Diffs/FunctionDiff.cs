@@ -1,10 +1,13 @@
 ﻿using UAssetAPI;
 using UAssetAPI.ExportTypes;
+using UAssetAPI.UnrealTypes;
 using static UassetComparisonTool.UassetUtils;
 
 namespace UassetComparisonTool.Diffs;
 
 public class FunctionDiff(DiffType diffType, string name) : Diff(diffType, name) {
+
+    public FlagsChange<EFunctionFlags> FunctionFlags = FlagsChange<EFunctionFlags>.Default();
 
     public Dictionary<string, PropertyDiff> InputProperties { get; private set; } = new();
     
@@ -17,7 +20,9 @@ public class FunctionDiff(DiffType diffType, string name) : Diff(diffType, name)
             OutputProperties.Values.Where(d => d.DiffType != DiffType.Unchanged);
 
     protected override IList<IChangeable> CollectChildren() {
-        var children = new List<IChangeable>();
+        var children = new List<IChangeable> {
+                FunctionFlags,
+        };
         
         children.AddRange(InputProperties.Values);
         children.AddRange(OutputProperties.Values);
@@ -44,6 +49,7 @@ public class FunctionDiff(DiffType diffType, string name) : Diff(diffType, name)
         var outputParamsA = CollectProperties(a, IsOutputParam);
         var outputParamsB = CollectProperties(b, IsOutputParam);
 
+        diff.FunctionFlags = FlagsChange<EFunctionFlags>.Create(a.FunctionFlags, b.FunctionFlags);
         diff.InputProperties = PropertyDiff.Create(context, inputParamsA, inputParamsB);
         diff.OutputProperties = PropertyDiff.Create(context, outputParamsA, outputParamsB);
     }

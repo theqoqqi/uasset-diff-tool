@@ -32,6 +32,7 @@ public class DiffPrinter {
 
     private void PrintPropertyDiff(PropertyDiff diff, int indent) {
         PrintDiffType(diff, "Property", indent);
+        PrintFlagsChange(diff.PropertyFlags, "Flags", indent + 2);
 
         if (diff.DiffType == DiffType.Changed) {
             
@@ -50,6 +51,7 @@ public class DiffPrinter {
         var prefix = Indent(indent);
 
         PrintDiffType(diff, "Function", indent);
+        PrintFlagsChange(diff.FunctionFlags, "Flags", indent + 2);
 
         if (diff.DiffType == DiffType.Changed) {
             if (diff.ChangedInputProperties.Any()) {
@@ -76,6 +78,22 @@ public class DiffPrinter {
         }
         
         Writer.WriteLine($"{Indent(indentLevel)}{title}: {change.From} => {change.To}");
+    }
+
+    private void PrintFlagsChange<T>(FlagsChange<T> change, string title, int indentLevel) where T : struct, Enum {
+        if (change.DiffType == DiffType.Unchanged) {
+            return;
+        }
+        
+        Writer.WriteLine($"{Indent(indentLevel)}{title}: {change.DiffType}");
+
+        if (change.HasAddedFlags) {
+            Writer.WriteLine($"{Indent(indentLevel + 1)}Added: {change.Added}");
+        }
+
+        if (change.HasRemovedFlags) {
+            Writer.WriteLine($"{Indent(indentLevel + 1)}Removed: {change.Removed}");
+        }
     }
 
     private void PrintDiffType(Diff diff, string title, int indentLevel) {

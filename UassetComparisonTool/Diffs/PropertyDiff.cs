@@ -1,10 +1,13 @@
 ﻿using UAssetAPI;
 using UAssetAPI.FieldTypes;
+using UAssetAPI.UnrealTypes;
 using static UassetComparisonTool.UassetUtils;
 
 namespace UassetComparisonTool.Diffs;
 
 public class PropertyDiff : Diff {
+
+    public FlagsChange<EPropertyFlags> PropertyFlags = FlagsChange<EPropertyFlags>.Default();
 
     public ValueChange<string> Type { get; private set; } = ValueChange<string>.Default();
     
@@ -25,6 +28,7 @@ public class PropertyDiff : Diff {
         
         children.AddRange(InnerProperties.Values);
         children.AddRange([
+                PropertyFlags,
                 Type,
                 StructClass,
                 PropertyClass,
@@ -69,6 +73,7 @@ public class PropertyDiff : Diff {
     }
 
     private static void FindDiffs(DiffContext context, PropertyDiff diff, FProperty a, FProperty b) {
+        diff.PropertyFlags = FlagsChange<EPropertyFlags>.Create(a.PropertyFlags, b.PropertyFlags);
         diff.ArrayDim = ValueChange<EArrayDim>.Create(a.ArrayDim, b.ArrayDim);
         diff.Type = ValueChange<string>.Create(a.SerializedType.ToString(), b.SerializedType.ToString());
 
