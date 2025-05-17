@@ -1,4 +1,5 @@
-﻿using UAssetAPI;
+﻿using System.CommandLine;
+using UAssetAPI;
 using UAssetAPI.UnrealTypes;
 using UassetComparisonTool.Diffs;
 
@@ -6,27 +7,60 @@ namespace UassetComparisonTool;
 
 internal static class Program {
 
-    private static void Main(string[] args) {
-        if (args.Length != 2) {
-            Console.WriteLine("Usage: UassetComparisonTool <fileOrDirectoryA> <fileOrDirectoryB>");
-            return;
-        }
+    private static async Task<int> Main(string[] args) {
+        var pathA = new Argument<string>(
+                name: "pathA",
+                description: "First .uasset file or directory to compare."
+        );
 
-        var pathA = args[0];
-        var pathB = args[1];
-        var writer = Console.Out;
+        var pathB = new Argument<string>(
+                name: "pathB",
+                description: "Second .uasset file or directory to compare."
+        );
+
+        var outputPath = new Option<string?>(
+                aliases: ["--output", "-o"],
+                getDefaultValue: () => null,
+                description: "If set, write diff to this file; otherwise write to console."
+        ).ExistingOrCreateableFile();
+
+        var rootCommand = new RootCommand("UAsset comparison tool") {
+                pathA,
+                pathB,
+                outputPath
+        };
+
+        rootCommand.SetHandler(RunComparison, pathA, pathB, outputPath);
+
+        return await rootCommand.InvokeAsync(args);
+    }
+
+    private static void RunComparison(string pathA, string pathB, string? outputPath) {
+        var writer = GetWriter(outputPath);
 
         if (Directory.Exists(pathA) && Directory.Exists(pathB)) {
             CompareDirectories(writer, pathA, pathB);
+            writer.Flush();
             return;
         }
 
         if (File.Exists(pathA) && File.Exists(pathB)) {
             CompareFiles(writer, pathA, pathB);
+            writer.Flush();
             return;
         }
 
         Console.WriteLine("Both arguments must be either existing files or existing directories.");
+    }
+
+    private static TextWriter GetWriter(string? outputPath) {
+        if (outputPath is null) {
+            return Console.Out;
+        }
+
+        return new StreamWriter(outputPath) {
+                AutoFlush = false
+        };
     }
 
     private static void CompareFiles(TextWriter writer, string fileA, string fileB) {
@@ -68,5 +102,30 @@ internal static class Program {
     private static Dictionary<string, string> GetUassetPaths(string directory) {
         return Directory.GetFiles(directory, "*.uasset", SearchOption.AllDirectories)
                 .ToDictionary(fullPath => Path.GetRelativePath(directory, fullPath));
+    }
+}
+
+internal static class OptionExtensions {
+    public static Option<string?> ExistingOrCreateableFile(this Option<string?> opt) {
+        opt.AddValidator(result => {
+            var value = result.GetValueOrDefault<string?>();
+
+            if (string.IsNullOrEmpty(value)) {
+                return;
+            }
+
+            try {
+                var dir = Path.GetDirectoryName(value);
+
+                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) {
+                    Directory.CreateDirectory(dir);
+                }
+            }
+            catch {
+                result.ErrorMessage = $"Invalid path: {value}";
+            }
+        });
+
+        return opt;
     }
 }
