@@ -57,7 +57,15 @@ internal static class Program {
     };
 
     private static async Task<int> Main(string[] args) {
-        Command.SetHandler(RunComparison, PathA, PathB, OutputPath, FilterByDeps, DiffTypes, BlueprintsOnly);
+        Command.SetHandler(
+                RunComparison,
+                PathA,
+                PathB,
+                OutputPath,
+                FilterByDeps,
+                DiffTypes,
+                BlueprintsOnly
+        );
 
         return await Command.InvokeAsync(args);
     }
@@ -145,7 +153,7 @@ internal static class Program {
         var assetA = GetUAsset(shortPath, filesA);
         var assetB = GetUAsset(shortPath, filesB);
         var context = DiffContext.From(assetA, assetB);
-        
+
         if (blueprintsOnly && !(HasBlueprints(assetA) || HasBlueprints(assetB))) {
             return null;
         }
@@ -157,10 +165,10 @@ internal static class Program {
         var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var line in File.ReadLines(filePath)) {
-            var trimmed = line.Trim();
+            var trimmed = line.Trim().Replace('/', '\\');
 
-            if (trimmed.StartsWith("/Game/") && !trimmed.StartsWith("/Game/Mods/")) {
-                var withoutPrefix = trimmed.Substring("/Game/".Length);
+            if (trimmed.StartsWith("\\Game\\") && !trimmed.StartsWith("\\Game\\Mods\\")) {
+                var withoutPrefix = trimmed.Substring("\\Game\\".Length);
                 var withoutExtension = withoutPrefix.Split('.')[0];
 
                 result.Add(withoutExtension);
@@ -182,16 +190,20 @@ internal static class Program {
     }
 
     private static string GetShortAssetPath(string directory, string path) {
-        var shortPath = Path.GetRelativePath(directory, path);
-        var idx = shortPath.IndexOf("Content" + Path.DirectorySeparatorChar, StringComparison.Ordinal);
+        return GetShortAssetPath(Path.GetRelativePath(directory, path));
+    }
+
+    private static string GetShortAssetPath(string relativePath) {
+        var convertedPath = relativePath.Replace('/', '\\');
+        var idx = convertedPath.IndexOf("Content\\", StringComparison.Ordinal);
 
         if (idx < 0) {
-            return shortPath;
+            return convertedPath;
         }
 
-        var relativePath = shortPath.Substring(idx + "Content/".Length);
+        var shortPath = convertedPath.Substring(idx + "Content\\".Length);
 
-        return Path.ChangeExtension(relativePath, null).Replace('\\', '/');
+        return Path.ChangeExtension(shortPath, null);
     }
 }
 
