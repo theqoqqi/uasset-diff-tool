@@ -95,31 +95,44 @@ internal static class Program {
         var allKeys = filesA.Keys.Union(filesB.Keys).OrderBy(k => k);
 
         return allKeys
-                .Select(relPath => GetAssetDiff(relPath, filesA, filesB))
+                .Select(shortPath => GetAssetDiff(shortPath, filesA, filesB))
                 .ToDictionary(diff => diff.Name);
     }
 
     private static AssetDiff GetAssetDiff(
-            string relPath,
+            string shortPath,
             Dictionary<string, string> filesA,
             Dictionary<string, string> filesB
     ) {
-        var assetA = GetUAsset(relPath, filesA);
-        var assetB = GetUAsset(relPath, filesB);
+        var assetA = GetUAsset(shortPath, filesA);
+        var assetB = GetUAsset(shortPath, filesB);
         var context = DiffContext.From(assetA, assetB);
 
-        return AssetDiff.Create(context, relPath, assetA, assetB);
+        return AssetDiff.Create(context, shortPath, assetA, assetB);
     }
 
-    private static UAsset? GetUAsset(string relPath, Dictionary<string, string> files) {
-        return files.TryGetValue(relPath, out var fullPath)
+    private static UAsset? GetUAsset(string shortPath, Dictionary<string, string> files) {
+        return files.TryGetValue(shortPath, out var fullPath)
                 ? new UAsset(fullPath, EngineVersion.VER_UE4_27)
                 : null;
     }
 
     private static Dictionary<string, string> GetUassetPaths(string directory) {
         return Directory.GetFiles(directory, "*.uasset", SearchOption.AllDirectories)
-                .ToDictionary(fullPath => Path.GetRelativePath(directory, fullPath));
+                .ToDictionary(fullPath => GetShortAssetPath(directory, fullPath));
+    }
+
+    private static string GetShortAssetPath(string directory, string path) {
+        var shortPath = Path.GetRelativePath(directory, path);
+        var idx = shortPath.IndexOf("Content" + Path.DirectorySeparatorChar, StringComparison.Ordinal);
+
+        if (idx < 0) {
+            return shortPath;
+        }
+
+        var relativePath = shortPath.Substring(idx + "Content/".Length);
+
+        return Path.ChangeExtension(relativePath, null).Replace('\\', '/');
     }
 }
 
