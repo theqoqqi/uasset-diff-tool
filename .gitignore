@@ -1,8 +1,10 @@
 
 /UassetComparisonTool/TestData
+/UassetComparisonTool/Output
 
 [Bb]in/
 [Oo]bj/
 
 .idea
 *.user
+*.DotSettings
