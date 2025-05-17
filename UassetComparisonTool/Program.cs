@@ -2,6 +2,7 @@
 using UAssetAPI;
 using UAssetAPI.UnrealTypes;
 using UassetComparisonTool.Diffs;
+using static UassetComparisonTool.UassetUtils;
 
 namespace UassetComparisonTool;
 
@@ -41,16 +42,22 @@ internal static class Program {
             AllowMultipleArgumentsPerToken = true
     };
 
+    private static readonly Option<bool> BlueprintsOnly = new Option<bool>(
+            name: "--blueprints-only",
+            description: "Only include assets that are Blueprint classes (i.e. have functions or properties)."
+    );
+
     private static readonly RootCommand Command = new RootCommand("UAsset comparison tool") {
             PathA,
             PathB,
             OutputPath,
             FilterByDeps,
-            DiffTypes
+            DiffTypes,
+            BlueprintsOnly
     };
 
     private static async Task<int> Main(string[] args) {
-        Command.SetHandler(RunComparison, PathA, PathB, OutputPath, FilterByDeps, DiffTypes);
+        Command.SetHandler(RunComparison, PathA, PathB, OutputPath, FilterByDeps, DiffTypes, BlueprintsOnly);
 
         return await Command.InvokeAsync(args);
     }
@@ -60,13 +67,14 @@ internal static class Program {
             string pathB,
             string? outputPath,
             FileInfo? filterByDeps,
-            DiffType[] diffTypes
+            DiffType[] diffTypes,
+            bool blueprintsOnly
     ) {
         var writer = GetWriter(outputPath);
         var diffPrinter = new DiffPrinter(writer, diffTypes);
 
         if (Directory.Exists(pathA) && Directory.Exists(pathB)) {
-            var assetDiffs = CompareDirectories(pathA, pathB);
+            var assetDiffs = CompareDirectories(pathA, pathB, blueprintsOnly);
             var filteredAssetDiffs = FilterAssetDiffs(assetDiffs, filterByDeps);
 
             diffPrinter.PrintDiffs(filteredAssetDiffs.Values);
@@ -117,24 +125,30 @@ internal static class Program {
         return AssetDiff.Create(context, assetName, assetA, assetB);
     }
 
-    private static Dictionary<string, AssetDiff> CompareDirectories(string dirA, string dirB) {
+    private static Dictionary<string, AssetDiff> CompareDirectories(string dirA, string dirB, bool blueprintsOnly) {
         var filesA = GetUassetPaths(dirA);
         var filesB = GetUassetPaths(dirB);
         var allKeys = filesA.Keys.Union(filesB.Keys).OrderBy(k => k);
 
         return allKeys
-                .Select(shortPath => GetAssetDiff(shortPath, filesA, filesB))
+                .Select(shortPath => GetAssetDiff(shortPath, filesA, filesB, blueprintsOnly))
+                .OfType<AssetDiff>()
                 .ToDictionary(diff => diff.Name);
     }
 
-    private static AssetDiff GetAssetDiff(
+    private static AssetDiff? GetAssetDiff(
             string shortPath,
             Dictionary<string, string> filesA,
-            Dictionary<string, string> filesB
+            Dictionary<string, string> filesB,
+            bool blueprintsOnly
     ) {
         var assetA = GetUAsset(shortPath, filesA);
         var assetB = GetUAsset(shortPath, filesB);
         var context = DiffContext.From(assetA, assetB);
+        
+        if (blueprintsOnly && !(HasBlueprints(assetA) || HasBlueprints(assetB))) {
+            return null;
+        }
 
         return AssetDiff.Create(context, shortPath, assetA, assetB);
     }
