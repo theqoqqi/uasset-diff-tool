@@ -6,6 +6,8 @@ namespace UassetComparisonTool.Diffs;
 
 public class AssetDiff(DiffType diffType, string name) : Diff(diffType, name) {
 
+    public ValueChange<string> Path { get; private set; } = ValueChange<string>.Default();
+    
     public Dictionary<string, FunctionDiff> Functions { get; private init; } = new();
 
     public Dictionary<string, PropertyDiff> Properties { get; private init; } = new();
@@ -39,6 +41,7 @@ public class AssetDiff(DiffType diffType, string name) : Diff(diffType, name) {
         }
 
         var diff = new AssetDiff(DiffType.Unchanged, assetName) {
+                Path = ValueChange<string>.Create(context.shortPathA, context.shortPathB),
                 Properties = PropertyDiff.Create(context, assetA, assetB),
                 Functions = FunctionDiff.Create(context, assetA, assetB)
         };

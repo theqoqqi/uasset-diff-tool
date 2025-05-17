@@ -152,7 +152,7 @@ internal static class Program {
     ) {
         var assetA = GetUAsset(shortPath, filesA);
         var assetB = GetUAsset(shortPath, filesB);
-        var context = DiffContext.From(assetA, assetB);
+        var context = DiffContext.From(assetA, assetB, shortPath, shortPath);
 
         if (blueprintsOnly && !(HasBlueprints(assetA) || HasBlueprints(assetB))) {
             return null;

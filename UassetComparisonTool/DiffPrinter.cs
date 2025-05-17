@@ -16,6 +16,7 @@ public class DiffPrinter(TextWriter writer, IEnumerable<DiffType> filteredDiffTy
         }
         
         PrintDiffType(assetDiff, "Asset", 0);
+        PrintValueChange(assetDiff.Path, "Path", 1);
 
         if (assetDiff.ChangedProperties.Any()) {
             writer.WriteLine("  Property changes:");
