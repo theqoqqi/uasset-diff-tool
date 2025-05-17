@@ -6,11 +6,18 @@ public class DiffPrinter {
 
     private TextWriter Writer;
 
-    public DiffPrinter(TextWriter writer) {
+    private DiffType[] FilteredDiffTypes;
+
+    public DiffPrinter(TextWriter writer, DiffType[] filteredDiffTypes) {
         Writer = writer;
+        FilteredDiffTypes = filteredDiffTypes;
     }
 
     public void PrintDiff(AssetDiff assetDiff) {
+        if (!FilteredDiffTypes.Contains(assetDiff.DiffType)) {
+            return;
+        }
+        
         PrintDiffType(assetDiff, "Asset", 0);
 
         if (assetDiff.ChangedProperties.Any()) {

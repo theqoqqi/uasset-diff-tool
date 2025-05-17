@@ -24,20 +24,34 @@ internal static class Program {
                 description: "If set, write diff to this file; otherwise write to console."
         ).ExistingOrCreateableFile();
 
+        var diffTypes = new Option<DiffType[]>(
+                aliases: ["--diff-types", "-d"],
+                getDefaultValue: () => [
+                        DiffType.Added,
+                        DiffType.Removed,
+                        DiffType.Changed
+                ],
+                description: "Which diff types to include (comma or space separated)."
+        ) {
+                Arity = ArgumentArity.OneOrMore,
+                AllowMultipleArgumentsPerToken = true
+        };
+
         var rootCommand = new RootCommand("UAsset comparison tool") {
                 pathA,
                 pathB,
-                outputPath
+                outputPath,
+                diffTypes
         };
 
-        rootCommand.SetHandler(RunComparison, pathA, pathB, outputPath);
+        rootCommand.SetHandler(RunComparison, pathA, pathB, outputPath, diffTypes);
 
         return await rootCommand.InvokeAsync(args);
     }
 
-    private static void RunComparison(string pathA, string pathB, string? outputPath) {
+    private static void RunComparison(string pathA, string pathB, string? outputPath, DiffType[] diffTypes) {
         var writer = GetWriter(outputPath);
-        var diffPrinter = new DiffPrinter(writer);
+        var diffPrinter = new DiffPrinter(writer, diffTypes);
 
         if (Directory.Exists(pathA) && Directory.Exists(pathB)) {
             CompareDirectories(diffPrinter, pathA, pathB);
