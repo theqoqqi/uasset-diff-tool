@@ -31,8 +31,8 @@ public static class UassetUtils {
                 .ToDictionary<FunctionExport, string>(export => export.ObjectName.ToString());
     }
 
-    public static bool HasBlueprints(UAsset asset) {
-        return asset.Exports.Find(IsClassExport) is not null;
+    public static bool HasBlueprints(UAsset? asset) {
+        return asset?.Exports.Find(IsClassExport) != null;
     }
 
     public static ClassExport GetClassExport(UAsset asset) {
