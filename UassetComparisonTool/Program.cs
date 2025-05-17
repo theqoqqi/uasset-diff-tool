@@ -7,46 +7,46 @@ namespace UassetComparisonTool;
 
 internal static class Program {
 
+    private static readonly Argument<string> PathA = new Argument<string>(
+            name: "pathA",
+            description: "First .uasset file or directory to compare."
+    );
+
+    private static readonly Argument<string> PathB = new Argument<string>(
+            name: "pathB",
+            description: "Second .uasset file or directory to compare."
+    );
+
+    private static readonly Option<string?> OutputPath = new Option<string?>(
+            aliases: ["--output", "-o"],
+            getDefaultValue: () => null,
+            description: "If set, write diff to this file; otherwise write to console."
+    ).ExistingOrCreateableFile();
+
+    private static readonly Option<DiffType[]> DiffTypes = new Option<DiffType[]>(
+            aliases: ["--diff-types", "-d"],
+            getDefaultValue: () => [
+                    DiffType.Added,
+                    DiffType.Removed,
+                    DiffType.Changed
+            ],
+            description: "Which diff types to include (comma or space separated)."
+    ) {
+            Arity = ArgumentArity.OneOrMore,
+            AllowMultipleArgumentsPerToken = true
+    };
+
+    private static readonly RootCommand Command = new RootCommand("UAsset comparison tool") {
+            PathA,
+            PathB,
+            OutputPath,
+            DiffTypes
+    };
+
     private static async Task<int> Main(string[] args) {
-        var pathA = new Argument<string>(
-                name: "pathA",
-                description: "First .uasset file or directory to compare."
-        );
+        Command.SetHandler(RunComparison, PathA, PathB, OutputPath, DiffTypes);
 
-        var pathB = new Argument<string>(
-                name: "pathB",
-                description: "Second .uasset file or directory to compare."
-        );
-
-        var outputPath = new Option<string?>(
-                aliases: ["--output", "-o"],
-                getDefaultValue: () => null,
-                description: "If set, write diff to this file; otherwise write to console."
-        ).ExistingOrCreateableFile();
-
-        var diffTypes = new Option<DiffType[]>(
-                aliases: ["--diff-types", "-d"],
-                getDefaultValue: () => [
-                        DiffType.Added,
-                        DiffType.Removed,
-                        DiffType.Changed
-                ],
-                description: "Which diff types to include (comma or space separated)."
-        ) {
-                Arity = ArgumentArity.OneOrMore,
-                AllowMultipleArgumentsPerToken = true
-        };
-
-        var rootCommand = new RootCommand("UAsset comparison tool") {
-                pathA,
-                pathB,
-                outputPath,
-                diffTypes
-        };
-
-        rootCommand.SetHandler(RunComparison, pathA, pathB, outputPath, diffTypes);
-
-        return await rootCommand.InvokeAsync(args);
+        return await Command.InvokeAsync(args);
     }
 
     private static void RunComparison(string pathA, string pathB, string? outputPath, DiffType[] diffTypes) {
