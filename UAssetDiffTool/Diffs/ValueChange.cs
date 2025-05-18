@@ -1,6 +1,6 @@
 ﻿using UAssetAPI.UnrealTypes;
 
-namespace UassetComparisonTool.Diffs;
+namespace UAssetDiffTool.Diffs;
 
 public class ValueChange<T> : IChangeable {
 

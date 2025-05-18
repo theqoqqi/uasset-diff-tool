@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UassetComparisonTool", "UassetComparisonTool\UassetComparisonTool.csproj", "{385679D8-60FD-4F40-A786-DBE3807F1EFF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UAssetDiffTool", "UAssetDiffTool\UAssetDiffTool.csproj", "{385679D8-60FD-4F40-A786-DBE3807F1EFF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UAssetAPI", "..\UAssetAPI\UAssetAPI\UAssetAPI.csproj", "{178417EC-1177-413E-BE85-C83AECD64279}"
 EndProject

@@ -1,9 +1,9 @@
 ﻿using UAssetAPI;
 using UAssetAPI.FieldTypes;
 using UAssetAPI.UnrealTypes;
-using static UassetComparisonTool.UassetUtils;
+using static UAssetDiffTool.UassetUtils;
 
-namespace UassetComparisonTool.Diffs;
+namespace UAssetDiffTool.Diffs;
 
 public class PropertyDiff : Diff {
 

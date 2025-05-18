@@ -1,6 +1,6 @@
-﻿using UassetComparisonTool.Diffs;
+﻿using UAssetDiffTool.Diffs;
 
-namespace UassetComparisonTool;
+namespace UAssetDiffTool;
 
 public class DiffPrinter(TextWriter writer, IEnumerable<DiffType> filteredDiffTypes) {
 

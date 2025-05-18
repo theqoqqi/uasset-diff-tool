@@ -1,10 +1,10 @@
 ﻿using System.CommandLine;
 using UAssetAPI;
 using UAssetAPI.UnrealTypes;
-using UassetComparisonTool.Diffs;
-using static UassetComparisonTool.UassetUtils;
+using UAssetDiffTool.Diffs;
+using static UAssetDiffTool.UassetUtils;
 
-namespace UassetComparisonTool;
+namespace UAssetDiffTool;
 
 internal static class Program {
 
@@ -52,7 +52,7 @@ internal static class Program {
             description: "Only include assets that are Blueprint classes (i.e. have functions or properties)."
     );
 
-    private static readonly RootCommand Command = new RootCommand("UAsset comparison tool") {
+    private static readonly RootCommand Command = new RootCommand("UAsset diff tool") {
             PathA,
             PathB,
             OutputPath,

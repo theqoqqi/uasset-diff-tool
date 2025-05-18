@@ -1,4 +1,4 @@
-﻿namespace UassetComparisonTool.Diffs;
+﻿namespace UAssetDiffTool.Diffs;
 
 public class FlagsChange<T> : IChangeable where T : struct, Enum {
 

@@ -1,4 +1,4 @@
-﻿namespace UassetComparisonTool.Diffs;
+﻿namespace UAssetDiffTool.Diffs;
 
 public enum DiffType {
     Unchanged,

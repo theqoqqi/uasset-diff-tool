@@ -1,4 +1,4 @@
-﻿namespace UassetComparisonTool.Diffs;
+﻿namespace UAssetDiffTool.Diffs;
 
 public abstract class Diff(DiffType diffType, string name) : IChangeable {
 

@@ -1,8 +1,8 @@
 ﻿
 using UAssetAPI;
-using static UassetComparisonTool.UassetUtils;
+using static UAssetDiffTool.UassetUtils;
 
-namespace UassetComparisonTool.Diffs;
+namespace UAssetDiffTool.Diffs;
 
 public class AssetDiff(DiffType diffType, string name) : Diff(diffType, name) {
 

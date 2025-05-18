@@ -1,6 +1,6 @@
 ﻿using UAssetAPI;
 
-namespace UassetComparisonTool.Diffs;
+namespace UAssetDiffTool.Diffs;
 
 public record DiffContext(UAsset? AssetA, UAsset? AssetB, string shortPathA, string shortPathB) {
 

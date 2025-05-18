@@ -3,7 +3,7 @@ using UAssetAPI.ExportTypes;
 using UAssetAPI.FieldTypes;
 using UAssetAPI.UnrealTypes;
 
-namespace UassetComparisonTool;
+namespace UAssetDiffTool;
 
 public static class UassetUtils {
 
