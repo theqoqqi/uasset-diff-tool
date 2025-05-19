@@ -1,9 +1,12 @@
-﻿namespace UAssetDiffTool.Diffs;
+﻿using Newtonsoft.Json;
+
+namespace UAssetDiffTool.Diffs;
 
 public abstract class Diff(DiffType diffType, string name) : IChangeable {
 
     public DiffType DiffType { get; private set; } = diffType;
 
+    [JsonProperty]
     public readonly string Name = name;
 
     protected void ResolveDiffType() {
@@ -16,7 +19,7 @@ public abstract class Diff(DiffType diffType, string name) : IChangeable {
         foreach (var child in children) {
             (child as Diff)?.ResolveDiffType();
         }
-        
+
         DiffType = GetChildrenDiffType(children);
     }
 
@@ -38,7 +41,7 @@ public abstract class Diff(DiffType diffType, string name) : IChangeable {
             Func<DiffType, string, D> diffFactory
     ) where D : Diff {
         var diffs = new Dictionary<string, D>();
-        
+
         foreach (var key in dictionaryA.Keys.Union(dictionaryB.Keys)) {
             var itemA = dictionaryA.GetValueOrDefault(key);
             var itemB = dictionaryB.GetValueOrDefault(key);
@@ -53,7 +56,7 @@ public abstract class Diff(DiffType diffType, string name) : IChangeable {
 
         return diffs;
     }
-    
+
     protected static DiffType GetInitialDiffType<T>(T? a, T? b) {
         if (a is null) {
             return DiffType.Added;

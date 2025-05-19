@@ -1,4 +1,5 @@
-﻿using UAssetAPI;
+﻿using Newtonsoft.Json;
+using UAssetAPI;
 using UAssetAPI.UnrealTypes;
 
 namespace UAssetDiffTool.Diffs;
@@ -7,8 +8,10 @@ public class ValueChange<T> : IChangeable {
 
     public DiffType DiffType { get; }
 
+    [JsonProperty]
     public readonly T? From;
 
+    [JsonProperty]
     public readonly T? To;
 
     private ValueChange(T? from, T? to) {

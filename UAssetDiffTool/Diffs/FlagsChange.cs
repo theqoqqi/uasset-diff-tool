@@ -1,15 +1,21 @@
-﻿namespace UAssetDiffTool.Diffs;
+﻿using Newtonsoft.Json;
+
+namespace UAssetDiffTool.Diffs;
 
 public class FlagsChange<T> : IChangeable where T : struct, Enum {
 
     public DiffType DiffType { get; }
 
+    [JsonProperty]
     public readonly T? From;
 
+    [JsonProperty]
     public readonly T? To;
 
+    [JsonProperty]
     public readonly T Added;
 
+    [JsonProperty]
     public readonly T Removed;
 
     public readonly bool HasAddedFlags;

@@ -1,14 +1,18 @@
-﻿using UAssetAPI;
+﻿using Newtonsoft.Json;
+using UAssetAPI;
 using static UAssetDiffTool.UassetUtils;
 
 namespace UAssetDiffTool.Diffs;
 
 public class AssetDiff(DiffType diffType, string name) : Diff(diffType, name) {
 
+    [JsonProperty]
     public ValueChange<string> Path { get; private set; } = ValueChange<string>.Default();
 
+    [JsonProperty]
     public Dictionary<string, FunctionDiff> Functions { get; private set; } = new();
 
+    [JsonProperty]
     public Dictionary<string, PropertyDiff> Properties { get; private set; } = new();
 
     public IEnumerable<FunctionDiff> ChangedFunctions =>

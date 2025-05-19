@@ -1,4 +1,5 @@
-﻿using UAssetAPI;
+﻿using Newtonsoft.Json;
+using UAssetAPI;
 using UAssetAPI.FieldTypes;
 using UAssetAPI.UnrealTypes;
 using static UAssetDiffTool.UassetUtils;
@@ -7,16 +8,22 @@ namespace UAssetDiffTool.Diffs;
 
 public class PropertyDiff : Diff {
 
+    [JsonProperty]
     public FlagsChange<EPropertyFlags> PropertyFlags = FlagsChange<EPropertyFlags>.Default();
 
+    [JsonProperty]
     public ValueChange<string> Type { get; private set; } = ValueChange<string>.Default();
 
+    [JsonProperty]
     public ValueChange<string> StructClass { get; private set; } = ValueChange<string>.Default();
 
+    [JsonProperty]
     public ValueChange<string> PropertyClass { get; private set; } = ValueChange<string>.Default();
 
+    [JsonProperty]
     public ValueChange<EArrayDim?> ArrayDim { get; private set; } = ValueChange<EArrayDim?>.Default();
 
+    [JsonProperty]
     public Dictionary<string, PropertyDiff> InnerProperties { get; } = new();
 
     private PropertyDiff(DiffType diffType, string name) : base(diffType, name) {
