@@ -58,9 +58,10 @@ public class DiffPrinter(TextWriter writer, IEnumerable<DiffType> filteredDiffTy
         var prefix = Indent(indent);
 
         PrintDiffType(diff, "Function", indent);
-        PrintFlagsChange(diff.FunctionFlags, "Flags", indent + 2);
 
         if (diff.DiffType == DiffType.Changed) {
+            PrintFlagsChange(diff.FunctionFlags, "Flags", indent + 2);
+
             if (diff.ChangedInputProperties.Any()) {
                 writer.WriteLine($"{prefix}    Input param changes:");
 
