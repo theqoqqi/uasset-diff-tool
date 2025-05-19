@@ -44,10 +44,10 @@ UAssetDiffTool.exe <pathA> <pathB> [options]
 
 ### Options
 
-- `--output <file>`  
+- `--output <file>`
   If set, writes output to a file instead of the console.
 
-- `--renamed-files <file>`  
+- `--renamed-files <file>`
   Path to a file listing renamed files (space-separated pairs).  
   Example:
   ```
@@ -55,16 +55,19 @@ UAssetDiffTool.exe <pathA> <pathB> [options]
   Content/audio/misc/att_default.uasset Content/audio/misc/att_default_AO.uasset
   ```
 
-- `--filter-by-deps <file>`  
+- `--filter-by-deps <file>`
   Only show diffs for assets listed in a UE4 dependency file.  
   See workflow section below for how to generate it.
 
-- `--diff-types <Added|Removed|Changed>`  
+- `--diff-types <Added|Removed|Changed>`
   Types of differences to include. Can be multiple values, separated by commas or spaces.  
   Default: `Added`, `Removed`, `Changed`
 
-- `--blueprints-only`  
+- `--blueprints-only`
   Only include assets that are Blueprint classes (i.e., have functions or properties).
+
+- `--expand-added-items`
+  Show child diffs for items marked as Added.
 
 ## Workflow Example
 
