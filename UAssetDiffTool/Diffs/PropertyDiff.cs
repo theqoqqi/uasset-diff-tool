@@ -79,44 +79,54 @@ public class PropertyDiff : Diff {
         diff.ArrayDim = ValueChange<EArrayDim?>.Create(a?.ArrayDim, b?.ArrayDim);
         diff.Type = ValueChange<string>.Create(a?.SerializedType.ToString(), b?.SerializedType.ToString());
 
-        diff.StructClass = ValueChange<string>.Create(
-                context,
-                (a as FStructProperty)?.Struct,
-                (b as FStructProperty)?.Struct
-        );
+        if (a is FStructProperty || b is FStructProperty) {
+            diff.StructClass = ValueChange<string>.Create(
+                    context,
+                    (a as FStructProperty)?.Struct,
+                    (b as FStructProperty)?.Struct
+            );
+        }
 
-        diff.PropertyClass = ValueChange<string>.Create(
-                context,
-                (a as FObjectProperty)?.PropertyClass,
-                (b as FObjectProperty)?.PropertyClass
-        );
+        if (a is FObjectProperty || b is FObjectProperty) {
+            diff.PropertyClass = ValueChange<string>.Create(
+                    context,
+                    (a as FObjectProperty)?.PropertyClass,
+                    (b as FObjectProperty)?.PropertyClass
+            );
+        }
 
-        diff.AddInnerProperty(Create(
-                context,
-                "Inner",
-                (a as FArrayProperty)?.Inner,
-                (b as FArrayProperty)?.Inner
-        ));
+        if (a is FArrayProperty || b is FArrayProperty) {
+            diff.AddInnerProperty(Create(
+                    context,
+                    "Inner",
+                    (a as FArrayProperty)?.Inner,
+                    (b as FArrayProperty)?.Inner
+            ));
+        }
 
-        diff.AddInnerProperty(Create(
-                context,
-                "ElementProp",
-                (a as FSetProperty)?.ElementProp,
-                (b as FSetProperty)?.ElementProp
-        ));
+        if (a is FSetProperty || b is FSetProperty) {
+            diff.AddInnerProperty(Create(
+                    context,
+                    "ElementProp",
+                    (a as FSetProperty)?.ElementProp,
+                    (b as FSetProperty)?.ElementProp
+            ));
+        }
 
-        diff.AddInnerProperty(Create(
-                context,
-                "KeyProp",
-                (a as FMapProperty)?.KeyProp,
-                (b as FMapProperty)?.KeyProp
-        ));
+        if (a is FMapProperty || b is FMapProperty) {
+            diff.AddInnerProperty(Create(
+                    context,
+                    "KeyProp",
+                    (a as FMapProperty)?.KeyProp,
+                    (b as FMapProperty)?.KeyProp
+            ));
 
-        diff.AddInnerProperty(Create(
-                context,
-                "ValueProp",
-                (a as FMapProperty)?.ValueProp,
-                (b as FMapProperty)?.ValueProp
-        ));
+            diff.AddInnerProperty(Create(
+                    context,
+                    "ValueProp",
+                    (a as FMapProperty)?.ValueProp,
+                    (b as FMapProperty)?.ValueProp
+            ));
+        }
     }
 }
