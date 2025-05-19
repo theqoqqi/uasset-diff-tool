@@ -1,4 +1,5 @@
-﻿using UAssetAPI.UnrealTypes;
+﻿using UAssetAPI;
+using UAssetAPI.UnrealTypes;
 
 namespace UAssetDiffTool.Diffs;
 
@@ -33,14 +34,16 @@ public class ValueChange<T> : IChangeable {
     }
 
     public static ValueChange<string> Create(DiffContext context, FPackageIndex a, FPackageIndex b) {
-        var objectTypeA = a.Index > 0
-            ? a.ToExport(context.AssetA).ObjectName.ToString()
-            : a.ToImport(context.AssetA).ObjectName.ToString();
-        var objectTypeB = b.Index > 0
-            ? b.ToExport(context.AssetB).ObjectName.ToString()
-            : b.ToImport(context.AssetB).ObjectName.ToString();
+        var objectTypeA = StringifyPackageIndex(a, context.AssetA);
+        var objectTypeB = StringifyPackageIndex(b, context.AssetB);
 
         return new ValueChange<string>(objectTypeA, objectTypeB);
+    }
+
+    private static string? StringifyPackageIndex(FPackageIndex packageIndex, UAsset? asset) {
+        return packageIndex.Index > 0
+                ? packageIndex.ToExport(asset).ObjectName.ToString()
+                : packageIndex.ToImport(asset).ObjectName.ToString();
     }
 
     public static ValueChange<T> Create(T? from, T? to) {
