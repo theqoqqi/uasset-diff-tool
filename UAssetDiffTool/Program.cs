@@ -1,6 +1,7 @@
 ﻿using System.CommandLine;
 using UAssetAPI;
 using UAssetAPI.UnrealTypes;
+using UAssetDiffTool.Cli;
 using UAssetDiffTool.Diffs;
 using static UAssetDiffTool.UassetUtils;
 
@@ -8,84 +9,23 @@ namespace UAssetDiffTool;
 
 internal static class Program {
 
-    private static readonly Argument<string> PathA = new Argument<string>(
-            name: "pathA",
-            description: "First .uasset file or directory to compare."
-    );
-
-    private static readonly Argument<string> PathB = new Argument<string>(
-            name: "pathB",
-            description: "Second .uasset file or directory to compare."
-    );
-
-    private static readonly Option<string?> OutputPath = new Option<string?>(
-            aliases: ["--output", "-o"],
-            getDefaultValue: () => null,
-            description: "If set, write diff to this file; otherwise write to console."
-    ).ExistingOrCreateableFile();
-
-    private static readonly Option<FileInfo?> RenamedFiles = new Option<FileInfo?>(
-            aliases: ["--renamed-files", "-r"],
-            description: "File with old->new asset path mappings (space separated)."
-    ).LegalFilePathsOnly();
-
-    private static readonly Option<FileInfo?> FilterByDeps = new Option<FileInfo?>(
-            aliases: ["--filter-by-deps", "-D"],
-            description: "Only show diffs for assets listed in this dependency file."
-    ).LegalFilePathsOnly();
-
-    private static readonly Option<DiffType[]> DiffTypes = new Option<DiffType[]>(
-            aliases: ["--diff-types", "-d"],
-            getDefaultValue: () => [
-                    DiffType.Added,
-                    DiffType.Removed,
-                    DiffType.Changed
-            ],
-            description: "Which diff types to include (comma or space separated)."
-    ) {
-            Arity = ArgumentArity.OneOrMore,
-            AllowMultipleArgumentsPerToken = true
-    };
-
-    private static readonly Option<bool> BlueprintsOnly = new Option<bool>(
-            name: "--blueprints-only",
-            description: "Only include assets that are Blueprint classes (i.e. have functions or properties)."
-    );
-
-    private static readonly RootCommand Command = new RootCommand("UAsset diff tool") {
-            PathA,
-            PathB,
-            OutputPath,
-            RenamedFiles,
-            FilterByDeps,
-            DiffTypes,
-            BlueprintsOnly
-    };
+    private static readonly UAssetDiffCommand Command = new UAssetDiffCommand();
 
     private static async Task<int> Main(string[] args) {
-        Command.SetHandler(
-                RunComparison,
-                PathA,
-                PathB,
-                OutputPath,
-                RenamedFiles,
-                FilterByDeps,
-                DiffTypes,
-                BlueprintsOnly
-        );
+        Command.SetHandler(RunComparison);
 
         return await Command.InvokeAsync(args);
     }
 
-    private static void RunComparison(
-            string pathA,
-            string pathB,
-            string? outputPath,
-            FileInfo? renamedFiles,
-            FileInfo? filterByDeps,
-            DiffType[] diffTypes,
-            bool blueprintsOnly
-    ) {
+    private static void RunComparison(UAssetDiffCommand.ParsedSymbols context) {
+        var pathA = context.PathA;
+        var pathB = context.PathB;
+        var outputPath = context.OutputPath;
+        var renamedFiles = context.RenamedFiles;
+        var filterByDeps = context.FilterByDeps;
+        var diffTypes = context.DiffTypes;
+        var blueprintsOnly = context.BlueprintsOnly;
+
         var renameMap = ParseRenamedFiles(renamedFiles);
         var writer = GetWriter(outputPath);
         var diffPrinter = new DiffPrinter(writer, diffTypes);
