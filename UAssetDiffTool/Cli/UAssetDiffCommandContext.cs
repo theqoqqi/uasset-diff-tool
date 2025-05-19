@@ -1,4 +1,5 @@
-﻿using UAssetAPI;
+﻿using System.Collections.Concurrent;
+using UAssetAPI;
 using UAssetAPI.UnrealTypes;
 using UAssetDiffTool.Diffs;
 
@@ -45,17 +46,17 @@ namespace UAssetDiffTool.Cli {
                 return null;
             }
 
-            var assets = new Dictionary<string, UAsset>();
+            var assets = new ConcurrentDictionary<string, UAsset>();
             var paths = Directory.GetFiles(path, "*.uasset", SearchOption.AllDirectories);
 
-            foreach (var assetPath in paths) {
+            Parallel.ForEach(paths, assetPath => {
                 AddAsset(assets, assetPath);
-            }
+            });
 
-            return assets;
+            return new Dictionary<string, UAsset>(assets);
         }
 
-        private static void AddAsset(Dictionary<string, UAsset> assets, string path) {
+        private static void AddAsset(IDictionary<string, UAsset> assets, string path) {
             assets.Add(GetShortAssetPath(path), GetAsset(path));
         }
 
