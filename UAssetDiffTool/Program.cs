@@ -24,7 +24,14 @@ internal static class Program {
         var filterByDeps = context.FilterByDeps;
         var blueprintsOnly = context.BlueprintsOnly;
 
-        var assetDiffs = CompareAssets(assetsA, assetsB, renamedFiles, blueprintsOnly);
+        if (context.IsSingleFileDiff) {
+            var assetDiff = CompareSingleAsset(context.AssetA!, context.AssetB!);
+            
+            diffPrinter.PrintDiff(assetDiff);
+            return;
+        }
+        
+        var assetDiffs = CompareAssets(assetsA!, assetsB!, renamedFiles, blueprintsOnly);
         var filteredAssetDiffs = FilterAssetDiffs(assetDiffs, filterByDeps);
 
         diffPrinter.PrintDiffs(filteredAssetDiffs.Values);
@@ -41,6 +48,15 @@ internal static class Program {
         return assetDiffs
                 .Where(pair => allowedPaths.Contains(pair.Key))
                 .ToDictionary();
+    }
+
+    private static AssetDiff CompareSingleAsset(UAsset assetA, UAsset assetB) {
+        var context = DiffContext.From(assetA, assetB);
+        var nameA = Path.GetFileNameWithoutExtension(assetA.FilePath);
+        var nameB = Path.GetFileNameWithoutExtension(assetB.FilePath);
+        var assetName = nameA == nameB ? nameA : $"{nameA} => {nameB}";
+
+        return AssetDiff.Create(context, assetName, assetA, assetB);
     }
 
     private static Dictionary<string, AssetDiff> CompareAssets(

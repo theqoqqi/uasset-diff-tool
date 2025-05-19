@@ -6,9 +6,15 @@ namespace UAssetDiffTool.Cli {
 
     public class UAssetDiffCommandContext {
 
-        public readonly Dictionary<string, UAsset> AssetsA;
+        public readonly bool IsSingleFileDiff;
 
-        public readonly Dictionary<string, UAsset> AssetsB;
+        public readonly UAsset? AssetA;
+
+        public readonly UAsset? AssetB;
+
+        public readonly Dictionary<string, UAsset>? AssetsA;
+
+        public readonly Dictionary<string, UAsset>? AssetsB;
 
         public readonly DiffPrinter DiffPrinter;
 
@@ -19,6 +25,9 @@ namespace UAssetDiffTool.Cli {
         public readonly bool BlueprintsOnly;
 
         public UAssetDiffCommandContext(UAssetDiffCommand.ParsedSymbols symbols) {
+            IsSingleFileDiff = IsFiles(symbols.PathA, symbols.PathB);
+            AssetA = GetSingleAsset(symbols.PathA);
+            AssetB = GetSingleAsset(symbols.PathB);
             AssetsA = CollectAssets(symbols.PathA);
             AssetsB = CollectAssets(symbols.PathB);
             DiffPrinter = CreateDiffPrinter(symbols.OutputPath, symbols.DiffTypes);
@@ -27,15 +36,16 @@ namespace UAssetDiffTool.Cli {
             BlueprintsOnly = symbols.BlueprintsOnly;
         }
 
-        private Dictionary<string, UAsset> CollectAssets(string path) {
-            var assets = new Dictionary<string, UAsset>();
+        private UAsset? GetSingleAsset(string path) {
+            return IsSingleFileDiff ? GetAsset(path) : null;
+        }
 
-            if (File.Exists(path)) {
-                AddAsset(assets, path);
-
-                return assets;
+        private Dictionary<string, UAsset>? CollectAssets(string path) {
+            if (IsSingleFileDiff) {
+                return null;
             }
 
+            var assets = new Dictionary<string, UAsset>();
             var paths = Directory.GetFiles(path, "*.uasset", SearchOption.AllDirectories);
 
             foreach (var assetPath in paths) {
@@ -46,7 +56,11 @@ namespace UAssetDiffTool.Cli {
         }
 
         private static void AddAsset(Dictionary<string, UAsset> assets, string path) {
-            assets.Add(GetShortAssetPath(path), new UAsset(path, EngineVersion.VER_UE4_27));
+            assets.Add(GetShortAssetPath(path), GetAsset(path));
+        }
+
+        private static UAsset GetAsset(string path) {
+            return new UAsset(path, EngineVersion.VER_UE4_27);
         }
 
         private static DiffPrinter CreateDiffPrinter(string? outputPath, DiffType[] diffTypes) {
@@ -61,6 +75,10 @@ namespace UAssetDiffTool.Cli {
             return new StreamWriter(outputPath) {
                     AutoFlush = false
             };
+        }
+
+        private bool IsFiles(string pathA, string pathB) {
+            return File.Exists(pathA) && File.Exists(pathB);
         }
 
         private static Dictionary<string, string> ParseRenamedFiles(FileInfo? renamedFiles) {
