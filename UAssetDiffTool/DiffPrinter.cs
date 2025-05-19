@@ -42,9 +42,9 @@ public class DiffPrinter(TextWriter writer, IEnumerable<DiffType> filteredDiffTy
 
     private void PrintPropertyDiff(PropertyDiff diff, int indent) {
         PrintDiffType(diff, "Property", indent);
-        PrintFlagsChange(diff.PropertyFlags, "Flags", indent + 2);
 
         if (ShouldPrintChildDiffs(diff.DiffType)) {
+            PrintFlagsChange(diff.PropertyFlags, "Flags", indent + 2);
 
             PrintValueChange(diff.Type, "Type", indent + 2);
             PrintValueChange(diff.StructClass, "StructClass", indent + 2);
