@@ -2,7 +2,7 @@
 
 namespace UAssetDiffTool;
 
-public class DiffPrinter(TextWriter writer, IEnumerable<DiffType> filteredDiffTypes) {
+public class DiffPrinter(TextWriter writer, IEnumerable<DiffType> filteredDiffTypes, bool expandAddedItems) {
 
     public void PrintDiffs(IEnumerable<AssetDiff> assetDiffs) {
         foreach (var assetDiff in assetDiffs) {
@@ -14,26 +14,29 @@ public class DiffPrinter(TextWriter writer, IEnumerable<DiffType> filteredDiffTy
         if (!filteredDiffTypes.Contains(assetDiff.DiffType)) {
             return;
         }
-        
+
         PrintDiffType(assetDiff, "Asset", 0);
-        PrintValueChange(assetDiff.Path, "Path", 1);
 
-        if (assetDiff.ChangedProperties.Any()) {
-            writer.WriteLine("  Property changes:");
+        if (ShouldPrintChildDiffs(assetDiff.DiffType)) {
+            PrintValueChange(assetDiff.Path, "Path", 1);
 
-            foreach (var pd in assetDiff.ChangedProperties) {
-                PrintPropertyDiff(pd, 2);
+            if (assetDiff.ChangedProperties.Any()) {
+                writer.WriteLine("  Property changes:");
+
+                foreach (var pd in assetDiff.ChangedProperties) {
+                    PrintPropertyDiff(pd, 2);
+                }
+            }
+
+            if (assetDiff.ChangedFunctions.Any()) {
+                writer.WriteLine("  Function changes:");
+
+                foreach (var fd in assetDiff.ChangedFunctions) {
+                    PrintFunctionDiff(fd, 2);
+                }
             }
         }
 
-        if (assetDiff.ChangedFunctions.Any()) {
-            writer.WriteLine("  Function changes:");
-
-            foreach (var fd in assetDiff.ChangedFunctions) {
-                PrintFunctionDiff(fd, 2);
-            }
-        }
-        
         writer.Flush();
     }
 
@@ -41,8 +44,8 @@ public class DiffPrinter(TextWriter writer, IEnumerable<DiffType> filteredDiffTy
         PrintDiffType(diff, "Property", indent);
         PrintFlagsChange(diff.PropertyFlags, "Flags", indent + 2);
 
-        if (diff.DiffType == DiffType.Changed) {
-            
+        if (ShouldPrintChildDiffs(diff.DiffType)) {
+
             PrintValueChange(diff.Type, "Type", indent + 2);
             PrintValueChange(diff.StructClass, "StructClass", indent + 2);
             PrintValueChange(diff.PropertyClass, "PropertyClass", indent + 2);
@@ -59,7 +62,7 @@ public class DiffPrinter(TextWriter writer, IEnumerable<DiffType> filteredDiffTy
 
         PrintDiffType(diff, "Function", indent);
 
-        if (diff.DiffType == DiffType.Changed) {
+        if (ShouldPrintChildDiffs(diff.DiffType)) {
             PrintFlagsChange(diff.FunctionFlags, "Flags", indent + 2);
 
             if (diff.ChangedInputProperties.Any()) {
@@ -84,7 +87,7 @@ public class DiffPrinter(TextWriter writer, IEnumerable<DiffType> filteredDiffTy
         if (change.DiffType == DiffType.Unchanged) {
             return;
         }
-        
+
         writer.WriteLine($"{Indent(indentLevel)}{title}: {change.From} => {change.To}");
     }
 
@@ -92,7 +95,7 @@ public class DiffPrinter(TextWriter writer, IEnumerable<DiffType> filteredDiffTy
         if (change.DiffType == DiffType.Unchanged) {
             return;
         }
-        
+
         writer.WriteLine($"{Indent(indentLevel)}{title}: {change.DiffType}");
 
         if (change.HasAddedFlags) {
@@ -115,8 +118,14 @@ public class DiffPrinter(TextWriter writer, IEnumerable<DiffType> filteredDiffTy
                 { DiffType.Changed, "~" },
         };
         var sign = signs[diff.DiffType];
-            
+
         writer.WriteLine($"{Indent(indentLevel)}{sign} {title} '{diff.Name}' {diff.DiffType}");
+    }
+
+    private bool ShouldPrintChildDiffs(DiffType diffType) {
+        return expandAddedItems
+                ? diffType is DiffType.Changed or DiffType.Added
+                : diffType is DiffType.Changed;
     }
 
     private static string Indent(int level) {

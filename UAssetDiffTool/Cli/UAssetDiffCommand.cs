@@ -52,6 +52,11 @@ public class UAssetDiffCommand : RootCommand {
             description: "Only include assets that are Blueprint classes (i.e. have functions or properties)."
     );
 
+    public static readonly Option<bool> ExpandAddedItems = new Option<bool>(
+            name: "--expand-added-items",
+            description: "Show child diffs for items marked as Added"
+    );
+
     public UAssetDiffCommand() : base(Description) {
         Add(PathA);
         Add(PathB);
@@ -60,6 +65,7 @@ public class UAssetDiffCommand : RootCommand {
         Add(FilterByDeps);
         Add(DiffTypes);
         Add(BlueprintsOnly);
+        Add(ExpandAddedItems);
     }
 
     public void SetHandler(Action<UAssetDiffCommandContext> handler) {
@@ -83,5 +89,7 @@ public class UAssetDiffCommand : RootCommand {
         public readonly DiffType[] DiffTypes = result.GetValueForOption(UAssetDiffCommand.DiffTypes) ?? [];
 
         public readonly bool BlueprintsOnly = result.GetValueForOption(UAssetDiffCommand.BlueprintsOnly);
+
+        public readonly bool ExpandAddedItems = result.GetValueForOption(UAssetDiffCommand.ExpandAddedItems);
     }
 }

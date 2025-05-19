@@ -30,7 +30,7 @@ namespace UAssetDiffTool.Cli {
             AssetB = GetSingleAsset(symbols.PathB);
             AssetsA = CollectAssets(symbols.PathA);
             AssetsB = CollectAssets(symbols.PathB);
-            DiffPrinter = CreateDiffPrinter(symbols.OutputPath, symbols.DiffTypes);
+            DiffPrinter = CreateDiffPrinter(symbols.OutputPath, symbols.DiffTypes, symbols.ExpandAddedItems);
             RenamedFiles = ParseRenamedFiles(symbols.RenamedFiles);
             FilterByDeps = ParseDependencyFile(symbols.FilterByDeps);
             BlueprintsOnly = symbols.BlueprintsOnly;
@@ -63,8 +63,8 @@ namespace UAssetDiffTool.Cli {
             return new UAsset(path, EngineVersion.VER_UE4_27);
         }
 
-        private static DiffPrinter CreateDiffPrinter(string? outputPath, DiffType[] diffTypes) {
-            return new DiffPrinter(GetWriter(outputPath), diffTypes);
+        private static DiffPrinter CreateDiffPrinter(string? outputPath, DiffType[] diffTypes, bool expandAddedItems) {
+            return new DiffPrinter(GetWriter(outputPath), diffTypes, expandAddedItems);
         }
 
         private static TextWriter GetWriter(string? outputPath) {
