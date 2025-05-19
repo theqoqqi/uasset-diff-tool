@@ -7,16 +7,14 @@ namespace UAssetDiffTool;
 
 public static class UassetUtils {
 
-    public static Dictionary<string, FProperty> CollectProperties(UAsset asset) {
-        return CollectProperties(GetClassExport(asset));
+    public static Dictionary<string, FProperty> CollectProperties(UAsset? asset) {
+        return asset is null
+                ? new Dictionary<string, FProperty>()
+                : CollectProperties(GetClassExport(asset), _ => true);
     }
 
-    public static Dictionary<string, FProperty> CollectProperties(StructExport export) {
-        return CollectProperties(export, _ => true);
-    }
-
-    public static Dictionary<string, FProperty> CollectProperties(StructExport export, Func<FProperty, bool> filter) {
-        return export.LoadedProperties
+    public static Dictionary<string, FProperty> CollectProperties(StructExport? export, Func<FProperty, bool> filter) {
+        return (export?.LoadedProperties ?? [])
                 .Where(filter)
                 .GroupBy(p => p.Name.ToString())
                 .Where(grouping => grouping.Count() == 1)
@@ -24,8 +22,8 @@ public static class UassetUtils {
                 .ToDictionary<FProperty, string>(p => p.Name.ToString());
     }
 
-    public static Dictionary<string, FunctionExport> CollectFunctions(UAsset asset) {
-        return asset.Exports
+    public static Dictionary<string, FunctionExport> CollectFunctions(UAsset? asset) {
+        return (asset?.Exports ?? [])
                 .Where(IsFunction)
                 .Cast<FunctionExport>()
                 .ToDictionary<FunctionExport, string>(export => export.ObjectName.ToString());

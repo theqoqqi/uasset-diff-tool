@@ -4,9 +4,9 @@ public class FlagsChange<T> : IChangeable where T : struct, Enum {
 
     public DiffType DiffType { get; }
 
-    public readonly T From;
+    public readonly T? From;
 
-    public readonly T To;
+    public readonly T? To;
 
     public readonly T Added;
 
@@ -16,7 +16,7 @@ public class FlagsChange<T> : IChangeable where T : struct, Enum {
 
     public readonly bool HasRemovedFlags;
 
-    private FlagsChange(T from, T to) {
+    private FlagsChange(T? from, T? to) {
         DiffType = ResolveDiffType(from, to);
         From = from;
         To = to;
@@ -26,19 +26,31 @@ public class FlagsChange<T> : IChangeable where T : struct, Enum {
         HasRemovedFlags = !Removed.Equals(default(T));
     }
 
-    private DiffType ResolveDiffType(T from, T to) {
-        return from.Equals(to) ? DiffType.Unchanged : DiffType.Changed;
+    private DiffType ResolveDiffType(T? from, T? to) {
+        if (Equals(from, to)) {
+            return DiffType.Unchanged;
+        }
+        
+        if (from is null) {
+            return DiffType.Added;
+        }
+
+        if (to is null) {
+            return DiffType.Removed;
+        }
+
+        return DiffType.Changed;
     }
 
-    private static T BitwiseAndNot(T a, T b) {
+    private static T BitwiseAndNot(T? a, T? b) {
         var ua = Convert.ToUInt64(a);
         var ub = Convert.ToUInt64(b);
         var result = ua & ~ub;
 
         return (T) Enum.ToObject(typeof(T), result);
     }
-    
-    public static FlagsChange<T> Create(T from, T to) {
+
+    public static FlagsChange<T> Create(T? from, T? to) {
         return new FlagsChange<T>(from, to);
     }
 

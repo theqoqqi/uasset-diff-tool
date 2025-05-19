@@ -34,7 +34,7 @@ public abstract class Diff(DiffType diffType, string name) : IChangeable {
             DiffContext context,
             Dictionary<string, T> dictionaryA,
             Dictionary<string, T> dictionaryB,
-            Action<DiffContext, D, T, T> findDiffs,
+            Action<DiffContext, D, T?, T?> findDiffs,
             Func<DiffType, string, D> diffFactory
     ) where D : Diff {
         var diffs = new Dictionary<string, D>();
@@ -45,10 +45,8 @@ public abstract class Diff(DiffType diffType, string name) : IChangeable {
             var initialDiffType = GetInitialDiffType(itemA, itemB);
             var diff = diffFactory(initialDiffType, key);
 
-            if (diff.DiffType == DiffType.Unchanged) {
-                findDiffs(context, diff, itemA!, itemB!);
-                diff.ResolveDiffType();
-            }
+            findDiffs(context, diff, itemA, itemB);
+            diff.ResolveDiffType();
 
             diffs.Add(key, diff);
         }
@@ -56,7 +54,7 @@ public abstract class Diff(DiffType diffType, string name) : IChangeable {
         return diffs;
     }
     
-    private static DiffType GetInitialDiffType<T>(T? a, T? b) {
+    protected static DiffType GetInitialDiffType<T>(T? a, T? b) {
         if (a is null) {
             return DiffType.Added;
         }

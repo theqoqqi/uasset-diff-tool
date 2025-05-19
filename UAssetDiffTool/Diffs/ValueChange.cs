@@ -33,14 +33,18 @@ public class ValueChange<T> : IChangeable {
         return DiffType.Changed;
     }
 
-    public static ValueChange<string> Create(DiffContext context, FPackageIndex a, FPackageIndex b) {
+    public static ValueChange<string> Create(DiffContext context, FPackageIndex? a, FPackageIndex? b) {
         var objectTypeA = StringifyPackageIndex(a, context.AssetA);
         var objectTypeB = StringifyPackageIndex(b, context.AssetB);
 
         return new ValueChange<string>(objectTypeA, objectTypeB);
     }
 
-    private static string? StringifyPackageIndex(FPackageIndex packageIndex, UAsset? asset) {
+    private static string? StringifyPackageIndex(FPackageIndex? packageIndex, UAsset? asset) {
+        if (packageIndex is null || packageIndex.IsNull()) {
+            return null;
+        }
+
         return packageIndex.Index > 0
                 ? packageIndex.ToExport(asset).ObjectName.ToString()
                 : packageIndex.ToImport(asset).ObjectName.ToString();

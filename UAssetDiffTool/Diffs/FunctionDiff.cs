@@ -30,7 +30,7 @@ public class FunctionDiff(DiffType diffType, string name) : Diff(diffType, name)
         return children;
     }
 
-    public static Dictionary<string, FunctionDiff> Create(DiffContext context, UAsset assetA, UAsset assetB) {
+    public static Dictionary<string, FunctionDiff> Create(DiffContext context, UAsset? assetA, UAsset? assetB) {
         var functionsA = CollectFunctions(assetA);
         var functionsB = CollectFunctions(assetB);
 
@@ -43,13 +43,13 @@ public class FunctionDiff(DiffType diffType, string name) : Diff(diffType, name)
         );
     }
 
-    private static void FindFunctionDiffs(DiffContext context, FunctionDiff diff, FunctionExport a, FunctionExport b) {
+    private static void FindFunctionDiffs(DiffContext context, FunctionDiff diff, FunctionExport? a, FunctionExport? b) {
         var inputParamsA = CollectProperties(a, IsInputParam);
         var inputParamsB = CollectProperties(b, IsInputParam);
         var outputParamsA = CollectProperties(a, IsOutputParam);
         var outputParamsB = CollectProperties(b, IsOutputParam);
 
-        diff.FunctionFlags = FlagsChange<EFunctionFlags>.Create(a.FunctionFlags, b.FunctionFlags);
+        diff.FunctionFlags = FlagsChange<EFunctionFlags>.Create(a?.FunctionFlags, b?.FunctionFlags);
         diff.InputProperties = PropertyDiff.Create(context, inputParamsA, inputParamsB);
         diff.OutputProperties = PropertyDiff.Create(context, outputParamsA, outputParamsB);
     }
