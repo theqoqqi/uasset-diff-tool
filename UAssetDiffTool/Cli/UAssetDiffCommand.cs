@@ -62,9 +62,9 @@ public class UAssetDiffCommand : RootCommand {
         Add(BlueprintsOnly);
     }
 
-    public void SetHandler(Action<ParsedSymbols> handler) {
+    public void SetHandler(Action<UAssetDiffCommandContext> handler) {
         this.SetHandler(context => {
-            handler(new ParsedSymbols(context.ParseResult));
+            handler(new UAssetDiffCommandContext(new ParsedSymbols(context.ParseResult)));
         });
     }
 
