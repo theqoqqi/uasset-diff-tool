@@ -1,8 +1,9 @@
 ﻿using System.CommandLine;
 
-namespace UAssetDiffTool;
+namespace UAssetDiffTool.Cli;
 
 internal static class OptionExtensions {
+
     public static Option<string?> ExistingOrCreateableFile(this Option<string?> opt) {
         opt.AddValidator(result => {
             var value = result.GetValueOrDefault<string?>();
