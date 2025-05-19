@@ -15,11 +15,16 @@ public static class UassetUtils {
 
     public static Dictionary<string, FProperty> CollectProperties(StructExport? export, Func<FProperty, bool> filter) {
         return (export?.LoadedProperties ?? [])
+                .Where(ShouldCollect)
                 .Where(filter)
                 .GroupBy(p => p.Name.ToString())
                 .Where(grouping => grouping.Count() == 1)
                 .Select(grouping => grouping.First())
                 .ToDictionary<FProperty, string>(p => p.Name.ToString());
+
+        bool ShouldCollect(FProperty property) {
+            return property.Name.Value.Value != "__WorldContext";
+        }
     }
 
     public static Dictionary<string, FunctionExport> CollectFunctions(UAsset? asset) {
