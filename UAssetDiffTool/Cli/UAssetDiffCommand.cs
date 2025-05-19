@@ -16,7 +16,7 @@ public class UAssetDiffCommand : RootCommand {
     public static readonly Argument<string> PathB = new Argument<string>(
             name: "pathB",
             description: "Second .uasset file or directory to compare."
-    );
+    ).BothFilesOrBothDirectories(PathA);
 
     public static readonly Option<string?> OutputPath = new Option<string?>(
             aliases: ["--output", "-o"],

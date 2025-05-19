@@ -30,21 +30,16 @@ internal static class Program {
         var writer = GetWriter(outputPath);
         var diffPrinter = new DiffPrinter(writer, diffTypes);
 
-        if (Directory.Exists(pathA) && Directory.Exists(pathB)) {
-            var assetDiffs = CompareDirectories(pathA, pathB, renameMap, blueprintsOnly);
-            var allowedPaths = ParseDependencyFile(filterByDeps);
-            var filteredAssetDiffs = FilterAssetDiffs(assetDiffs, allowedPaths);
-
-            diffPrinter.PrintDiffs(filteredAssetDiffs.Values);
-            return;
-        }
-
         if (File.Exists(pathA) && File.Exists(pathB)) {
             diffPrinter.PrintDiff(CompareFiles(pathA, pathB));
             return;
         }
 
-        Console.WriteLine("Both arguments must be either existing files or existing directories.");
+        var assetDiffs = CompareDirectories(pathA, pathB, renameMap, blueprintsOnly);
+        var allowedPaths = ParseDependencyFile(filterByDeps);
+        var filteredAssetDiffs = FilterAssetDiffs(assetDiffs, allowedPaths);
+
+        diffPrinter.PrintDiffs(filteredAssetDiffs.Values);
     }
 
     private static Dictionary<string, string> ParseRenamedFiles(FileInfo? renamedFiles) {

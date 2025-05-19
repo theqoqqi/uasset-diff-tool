@@ -26,4 +26,23 @@ internal static class OptionExtensions {
 
         return opt;
     }
+
+    public static Argument<string> BothFilesOrBothDirectories(
+            this Argument<string> thisArgument,
+            Argument<string> otherArgument
+    ) {
+        thisArgument.AddValidator(result => {
+            var pathA = result.GetValueForArgument(thisArgument);
+            var pathB = result.GetValueForArgument(otherArgument);
+
+            var bothIsFiles = File.Exists(pathA) && File.Exists(pathB);
+            var bothIsDirectories = Directory.Exists(pathA) && Directory.Exists(pathB);
+
+            if (!bothIsFiles && !bothIsDirectories) {
+                result.ErrorMessage = "Both arguments must be either existing files or existing directories.";
+            }
+        });
+
+        return thisArgument;
+    }
 }
