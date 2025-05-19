@@ -32,7 +32,8 @@ internal static class Program {
 
         if (Directory.Exists(pathA) && Directory.Exists(pathB)) {
             var assetDiffs = CompareDirectories(pathA, pathB, renameMap, blueprintsOnly);
-            var filteredAssetDiffs = FilterAssetDiffs(assetDiffs, filterByDeps);
+            var allowedPaths = ParseDependencyFile(filterByDeps);
+            var filteredAssetDiffs = FilterAssetDiffs(assetDiffs, allowedPaths);
 
             diffPrinter.PrintDiffs(filteredAssetDiffs.Values);
             return;
@@ -69,13 +70,11 @@ internal static class Program {
 
     private static Dictionary<string, AssetDiff> FilterAssetDiffs(
             Dictionary<string, AssetDiff> assetDiffs,
-            FileSystemInfo? filterByDeps
+            IReadOnlySet<string>? allowedPaths
     ) {
-        if (filterByDeps == null) {
+        if (allowedPaths is null) {
             return assetDiffs;
         }
-
-        var allowedPaths = ParseDependencyFile(filterByDeps.FullName);
 
         return assetDiffs
                 .Where(pair => allowedPaths.Contains(pair.Key))
@@ -143,10 +142,14 @@ internal static class Program {
         return AssetDiff.Create(context, shortPath, assetA, assetB);
     }
 
-    private static HashSet<string> ParseDependencyFile(string filePath) {
+    private static HashSet<string>? ParseDependencyFile(FileSystemInfo? filterByDeps) {
+        if (filterByDeps is null) {
+            return null;
+        }
+        
         var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var line in File.ReadLines(filePath)) {
+        foreach (var line in File.ReadLines(filterByDeps.FullName)) {
             var trimmed = line.Trim().Replace('/', '\\');
 
             if (trimmed.StartsWith("\\Game\\") && !trimmed.StartsWith("\\Game\\Mods\\")) {
