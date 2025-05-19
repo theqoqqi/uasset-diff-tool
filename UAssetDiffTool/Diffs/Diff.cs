@@ -35,16 +35,17 @@ public abstract class Diff(DiffType diffType, string name) : IChangeable {
             Dictionary<string, T> dictionaryA,
             Dictionary<string, T> dictionaryB,
             Action<DiffContext, D, T, T> findDiffs,
-            Func<string, D> diffFactory
+            Func<DiffType, string, D> diffFactory
     ) where D : Diff {
         var diffs = new Dictionary<string, D>();
         
         foreach (var key in dictionaryA.Keys.Union(dictionaryB.Keys)) {
-            var diff = diffFactory(key);
             var itemA = dictionaryA.GetValueOrDefault(key);
             var itemB = dictionaryB.GetValueOrDefault(key);
+            var initialDiffType = GetInitialDiffType(itemA, itemB);
+            var diff = diffFactory(initialDiffType, key);
 
-            if (!FindAddRemoveDiffs(diff, itemA, itemB)) {
+            if (diff.DiffType == DiffType.Unchanged) {
                 findDiffs(context, diff, itemA!, itemB!);
                 diff.ResolveDiffType();
             }
@@ -55,17 +56,15 @@ public abstract class Diff(DiffType diffType, string name) : IChangeable {
         return diffs;
     }
     
-    protected static bool FindAddRemoveDiffs<T>(Diff diff, T? a, T? b) {
+    private static DiffType GetInitialDiffType<T>(T? a, T? b) {
         if (a is null) {
-            diff.DiffType = DiffType.Added;
-            return true;
+            return DiffType.Added;
         }
 
         if (b is null) {
-            diff.DiffType = DiffType.Removed;
-            return true;
+            return DiffType.Removed;
         }
 
-        return false;
+        return DiffType.Unchanged;
     }
 }

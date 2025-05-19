@@ -59,7 +59,7 @@ public class PropertyDiff : Diff {
                 propertiesA,
                 propertiesB,
                 FindDiffs,
-                name => new PropertyDiff(DiffType.Unchanged, name)
+                (diffType, name) => new PropertyDiff(diffType, name)
         );
     }
 

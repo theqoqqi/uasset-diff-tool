@@ -39,7 +39,7 @@ public class FunctionDiff(DiffType diffType, string name) : Diff(diffType, name)
                 functionsA,
                 functionsB,
                 FindFunctionDiffs,
-                name => new FunctionDiff(DiffType.Unchanged, name)
+                (diffType, name) => new FunctionDiff(diffType, name)
         );
     }
 
