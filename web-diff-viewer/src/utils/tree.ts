@@ -55,3 +55,20 @@ export function buildAssetTree(assets: AssetDiff[]): AssetTreeNode[] {
 
     return convert(root);
 }
+
+export function sortTreeNodes(nodes: AssetTreeNode[]) {
+    return [...nodes].sort((a, b) => {
+        const aIsFolder = !a.asset && a.children.length > 0;
+        const bIsFolder = !b.asset && b.children.length > 0;
+
+        if (aIsFolder && !bIsFolder) {
+            return -1;
+        }
+
+        if (!aIsFolder && bIsFolder) {
+            return 1;
+        }
+
+        return a.name.localeCompare(b.name);
+    });
+}

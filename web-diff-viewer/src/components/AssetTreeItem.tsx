@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import styles from './AssetTreeItem.module.css';
 import type { AssetTreeNode } from '../utils/tree';
+import { sortTreeNodes } from '../utils/tree';
 import type { AssetDiff, DiffType } from '../diffs/types';
 
 interface AssetTreeItemProps {
@@ -42,7 +43,7 @@ const AssetTreeItem: React.FC<AssetTreeItemProps> = ({ item, onSelect }) => {
             </div>
             {isFolder && open && (
                 <div className={styles.children}>
-                    {item.children.map(child => (
+                    {sortTreeNodes(item.children).map(child => (
                         <AssetTreeItem
                             key={child.fullName}
                             item={child}

@@ -1,6 +1,6 @@
 import React from 'react';
 import AssetTreeItem from './AssetTreeItem';
-import { buildAssetTree } from '../utils/tree';
+import { buildAssetTree, sortTreeNodes } from '../utils/tree';
 import styles from './Sidebar.module.css';
 import type { AssetDiff } from '../diffs/types';
 
@@ -12,10 +12,11 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ data, onSelect }) => {
     const assets = Object.values(data);
     const tree = buildAssetTree(assets);
+    const sortedTree = sortTreeNodes(tree);
 
     return (
         <aside className={styles.sidebar}>
-            {tree.map(node => (
+            {sortedTree.map(node => (
                 <AssetTreeItem
                     key={node.fullName}
                     item={node}
