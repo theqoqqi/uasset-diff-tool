@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.CommandLine.Parsing;
 using Newtonsoft.Json;
 using UAssetAPI;
 using UAssetAPI.UnrealTypes;
@@ -29,17 +30,28 @@ namespace UAssetDiffTool.Cli {
 
         public readonly bool BlueprintsOnly;
 
-        public UAssetDiffCommandContext(UAssetDiffCommand.ParsedSymbols symbols) {
-            IsSingleFileDiff = IsFiles(symbols.PathA, symbols.PathB);
-            AssetA = GetSingleAsset(symbols.PathA);
-            AssetB = GetSingleAsset(symbols.PathB);
-            AssetsA = CollectAssets(symbols.PathA);
-            AssetsB = CollectAssets(symbols.PathB);
-            DiffPrinter = CreateDiffPrinter(symbols.OutputPath, symbols.DiffTypes, symbols.ExpandAddedItems);
-            JsonDiffWriter = CreateJsonDiffWriter(symbols.JsonOutputPath, symbols.PrettyJson);
-            RenamedFiles = ParseRenamedFiles(symbols.RenamedFiles);
-            FilterByDeps = ParseDependencyFile(symbols.FilterByDeps);
-            BlueprintsOnly = symbols.BlueprintsOnly;
+        public UAssetDiffCommandContext(ParseResult parseResult) {
+            var pathA = parseResult.GetValueForArgument(UAssetDiffCommand.PathA);
+            var pathB = parseResult.GetValueForArgument(UAssetDiffCommand.PathB);
+            var outputPath = parseResult.GetValueForOption(UAssetDiffCommand.OutputPath);
+            var jsonOutputPath = parseResult.GetValueForOption(UAssetDiffCommand.JsonOutputPath);
+            var prettyJson = parseResult.GetValueForOption(UAssetDiffCommand.PrettyJson);
+            var renamedFiles = parseResult.GetValueForOption(UAssetDiffCommand.RenamedFiles);
+            var filterByDeps = parseResult.GetValueForOption(UAssetDiffCommand.FilterByDeps);
+            var diffTypes = parseResult.GetValueForOption(UAssetDiffCommand.DiffTypes) ?? [];
+            var blueprintsOnly = parseResult.GetValueForOption(UAssetDiffCommand.BlueprintsOnly);
+            var expandAddedItems = parseResult.GetValueForOption(UAssetDiffCommand.ExpandAddedItems);
+            
+            IsSingleFileDiff = IsFiles(pathA, pathB);
+            AssetA = GetSingleAsset(pathA);
+            AssetB = GetSingleAsset(pathB);
+            AssetsA = CollectAssets(pathA);
+            AssetsB = CollectAssets(pathB);
+            DiffPrinter = CreateDiffPrinter(outputPath, diffTypes, expandAddedItems);
+            JsonDiffWriter = CreateJsonDiffWriter(jsonOutputPath, prettyJson);
+            RenamedFiles = ParseRenamedFiles(renamedFiles);
+            FilterByDeps = ParseDependencyFile(filterByDeps);
+            BlueprintsOnly = blueprintsOnly;
         }
 
         private UAsset? GetSingleAsset(string path) {

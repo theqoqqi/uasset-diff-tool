@@ -1,5 +1,4 @@
 ﻿using System.CommandLine;
-using System.CommandLine.Parsing;
 using UAssetDiffTool.Diffs;
 
 namespace UAssetDiffTool.Cli;
@@ -83,30 +82,7 @@ public class UAssetDiffCommand : RootCommand {
 
     public void SetHandler(Action<UAssetDiffCommandContext> handler) {
         this.SetHandler(context => {
-            handler(new UAssetDiffCommandContext(new ParsedSymbols(context.ParseResult)));
+            handler(new UAssetDiffCommandContext(context.ParseResult));
         });
-    }
-
-    public class ParsedSymbols(ParseResult result) {
-
-        public readonly string PathA = result.GetValueForArgument(UAssetDiffCommand.PathA);
-
-        public readonly string PathB = result.GetValueForArgument(UAssetDiffCommand.PathB);
-
-        public readonly string? OutputPath = result.GetValueForOption(UAssetDiffCommand.OutputPath);
-
-        public readonly string? JsonOutputPath = result.GetValueForOption(UAssetDiffCommand.JsonOutputPath);
-
-        public readonly bool PrettyJson = result.GetValueForOption(UAssetDiffCommand.PrettyJson);
-
-        public readonly FileInfo? RenamedFiles = result.GetValueForOption(UAssetDiffCommand.RenamedFiles);
-
-        public readonly FileInfo? FilterByDeps = result.GetValueForOption(UAssetDiffCommand.FilterByDeps);
-
-        public readonly DiffType[] DiffTypes = result.GetValueForOption(UAssetDiffCommand.DiffTypes) ?? [];
-
-        public readonly bool BlueprintsOnly = result.GetValueForOption(UAssetDiffCommand.BlueprintsOnly);
-
-        public readonly bool ExpandAddedItems = result.GetValueForOption(UAssetDiffCommand.ExpandAddedItems);
     }
 }
