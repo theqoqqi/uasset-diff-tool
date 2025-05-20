@@ -1,0 +1,21 @@
+
+.wrapper {
+    margin-bottom: 10px;
+
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.summary {
+    padding: 8px;
+
+    background-color: #eee;
+
+    cursor: pointer;
+}
+
+.content {
+    padding: 8px;
+
+    background-color: #fafafa;
+}

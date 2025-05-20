@@ -1,0 +1,30 @@
+
+.item {
+    margin-left: 12px;
+}
+
+.label {
+    padding: 4px;
+
+    cursor: pointer;
+}
+
+.children {
+    margin-left: 8px;
+}
+
+.added {
+    color: green;
+}
+
+.removed {
+    color: red;
+}
+
+.changed {
+    color: royalblue;
+}
+
+.unchanged {
+    color: #333;
+}

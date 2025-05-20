@@ -1,0 +1,18 @@
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    height: 100vh;
+
+    border: 2px dashed #ccc;
+    background: #f9f9f9;
+
+    box-sizing: border-box;
+}
+
+.button {
+    margin-top: 8px;
+}

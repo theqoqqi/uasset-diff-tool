@@ -1,0 +1,10 @@
+
+.container {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.header h2 {
+    margin: 0 0 8px;
+}
