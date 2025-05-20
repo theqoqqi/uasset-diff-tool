@@ -14,6 +14,7 @@ to be recreated manually. This tool streamlines the process by highlighting diff
 - Provides option to handle renamed files.
 - Optionally focuses on Blueprint assets only.
 - Outputs results to console or file.
+- Supports output to JSON.
 
 ## Installation
 
@@ -46,6 +47,12 @@ UAssetDiffTool.exe <pathA> <pathB> [options]
 
 - `--output <file>`
   If set, writes output to a file instead of the console.
+
+- `--json-output <file>`
+  If set, also writes a detailed JSON report of the diffs to the specified file.
+
+- `--pretty-json`
+  Enable indented (pretty) formatting for JSON output.
 
 - `--renamed-files <file>`
   Path to a file listing renamed files (space-separated pairs).  
@@ -85,7 +92,7 @@ UAssetDiffTool.exe <pathA> <pathB> [options]
 
 4. **First comparison run**:
    ```sh
-   UAssetDiffTool.exe old-game-assets new-game-assets --output diff.txt --filter-by-deps project-deps.txt
+   UAssetDiffTool.exe old-game-assets new-game-assets --output diff.txt --json-output diff.json --filter-by-deps project-deps.txt
    ```
 
 5. **Handle renamed assets**:
@@ -94,7 +101,7 @@ UAssetDiffTool.exe <pathA> <pathB> [options]
 
 6. **Final run** with rename mapping:
    ```sh
-   UAssetDiffTool.exe old-game-assets new-game-assets --output diff.txt --filter-by-deps project-deps.txt --renamed-files renamed-files.txt
+   UAssetDiffTool.exe old-game-assets new-game-assets --output diff.txt --json-output diff.json --filter-by-deps project-deps.txt --renamed-files renamed-files.txt
    ```
 
 ## Example Output
