@@ -1,7 +1,8 @@
 import React from 'react';
 import ExpandableCard from './ExpandableCard';
-import type { PropertyDiff, ValueChange, FlagsChange } from '../../diffs/types';
+import type { PropertyDiff, FlagsChange } from '../../diffs/types';
 import PropertyDiffList from './PropertyDiffList';
+import ValueChangeView from './ValueChangeView';
 
 interface PropertyDiffCardProps {
     name: string;
@@ -31,10 +32,10 @@ const PropertyDiffCard: React.FC<PropertyDiffCardProps> = ({
             }}
         >
             {renderField('Type', diff.Type)}
-            {renderField('StructClass', diff.StructClass)}
-            {renderField('PropertyClass', diff.PropertyClass)}
-            {renderField('ArrayDim', diff.ArrayDim)}
-            {renderField('Flags', diff.PropertyFlags)}
+            <ValueChangeView label='Type' change={diff.Type} />
+            <ValueChangeView label='StructClass' change={diff.StructClass} />
+            <ValueChangeView label='PropertyClass' change={diff.PropertyClass} />
+            <ValueChangeView label='ArrayDim' change={diff.ArrayDim} />
             <PropertyDiffList properties={diff.InnerProperties} />
         </ExpandableCard>
     );

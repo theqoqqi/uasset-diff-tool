@@ -1,0 +1,56 @@
+
+.view {
+    display: grid;
+    grid-template-columns: 200px 1fr 40px 1fr;
+    align-items: center;
+    gap: 8px;
+
+    padding: 6px 0;
+
+    font-family: monospace;
+    font-size: 14px;
+
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #fafafa;
+}
+
+.view:hover {
+    background-color: #f5f5f5;
+}
+
+.label {
+    color: #666;
+    text-align: right;
+}
+
+.from {
+    color: #d32f2f;
+
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.to {
+    color: #388e3c;
+
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.arrow {
+    color: #1976d2;
+    text-align: center;
+}
+
+.changed .from {
+    font-weight: bold;
+}
+
+.changed .to {
+    font-weight: bold;
+}

@@ -3,6 +3,7 @@ import styles from './DetailsView.module.css';
 import type {AssetDiff} from '../../diffs/types';
 import PropertyDiffList from './PropertyDiffList';
 import FunctionDiffList from './FunctionDiffList';
+import ValueChangeView from './ValueChangeView';
 
 interface DetailsViewProps {
     asset: AssetDiff | null;
@@ -22,7 +23,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({ asset }) => {
             <div className={styles.header}>
                 <h2>{asset.Name}</h2>
                 <p>Status: {asset.DiffType}</p>
-                <p>Path: {asset.Path?.From || ''} → {asset.Path?.To || ''}</p>
+                <ValueChangeView label='Path' change={asset.Path} />
             </div>
             <PropertyDiffList properties={asset.Properties} />
             <FunctionDiffList functions={asset.Functions} />
