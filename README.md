@@ -20,7 +20,7 @@ to be recreated manually. This tool streamlines the process by highlighting diff
 
 ### Download a release
 1. Grab the latest binary from Releases and unpack it anywhere.
-2. Run the tool using command line:
+2. Run the tool using command line. See command usage below.
 ```sh
 UAssetDiffTool.exe <pathA> <pathB> [options]
 ```
@@ -92,7 +92,12 @@ UAssetDiffTool.exe <pathA> <pathB> [options]
 
 4. **First comparison run**:
    ```sh
-   UAssetDiffTool.exe old-game-assets new-game-assets --output diff.txt --json-output diff.json --filter-by-deps project-deps.txt
+   UAssetDiffTool.exe \
+     old-game-assets \
+     new-game-assets \
+     --output diff.txt \
+     --json-output diff.json \
+     --filter-by-deps project-deps.txt
    ```
 
 5. **Handle renamed assets**:
@@ -101,7 +106,13 @@ UAssetDiffTool.exe <pathA> <pathB> [options]
 
 6. **Final run** with rename mapping:
    ```sh
-   UAssetDiffTool.exe old-game-assets new-game-assets --output diff.txt --json-output diff.json --filter-by-deps project-deps.txt --renamed-files renamed-files.txt
+   UAssetDiffTool.exe \
+     old-game-assets \
+     new-game-assets \
+     --output diff.txt \
+     --json-output diff.json \
+     --filter-by-deps project-deps.txt \
+     --renamed-files renamed-files.txt
    ```
 
 ## Example Output
