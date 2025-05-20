@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './AssetTreeItem.module.css';
 import type { AssetTreeNode } from '../utils/tree';
-import type {AssetDiff, DiffType} from '../diffs/types';
+import type { AssetDiff, DiffType } from '../diffs/types';
 
 interface AssetTreeItemProps {
     item: AssetTreeNode;
@@ -11,11 +11,13 @@ interface AssetTreeItemProps {
 const AssetTreeItem: React.FC<AssetTreeItemProps> = ({ item, onSelect }) => {
     const [open, setOpen] = useState(false);
     const statusClass = item.status.toLowerCase() as Lowercase<DiffType>;
+    const isFolder = !item.asset && item.children.length > 0;
+    const isAsset = !!item.asset;
 
     function handleClick() {
         if (item.asset) {
             onSelect(item.asset);
-        } else {
+        } else if (isFolder) {
             setOpen(!open);
         }
     }
@@ -26,9 +28,19 @@ const AssetTreeItem: React.FC<AssetTreeItemProps> = ({ item, onSelect }) => {
                 className={`${styles.label} ${styles[statusClass]}`}
                 onClick={handleClick}
             >
+                <span className={styles.icon}>
+                    {isFolder && (
+                        <span className={`${styles.folderIcon} ${open ? styles.open : ''}`}>
+                            {open ? '▼' : '▶'}
+                        </span>
+                    )}
+                    {isAsset && (
+                        <span className={styles.assetIcon}>📄</span>
+                    )}
+                </span>
                 {item.name}
             </div>
-            {item.children.length > 0 && open && (
+            {isFolder && open && (
                 <div className={styles.children}>
                     {item.children.map(child => (
                         <AssetTreeItem

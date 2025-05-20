@@ -4,9 +4,34 @@
 }
 
 .label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
     padding: 4px;
 
     cursor: pointer;
+}
+
+.icon {
+    display: inline-block;
+    width: 18px;
+    text-align: center;
+}
+
+.folderIcon {
+    font-size: 0.8em;
+    color: #666;
+    transition: transform 0.2s;
+}
+
+.folderIcon.open {
+    transform: rotate(90deg);
+}
+
+.assetIcon {
+    font-size: 0.9em;
+    color: #666;
 }
 
 .children {
