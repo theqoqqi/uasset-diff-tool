@@ -3,6 +3,7 @@ import ExpandableCard from './ExpandableCard';
 import type { PropertyDiff, FlagsChange } from '../../diffs/types';
 import PropertyDiffList from './PropertyDiffList';
 import ValueChangeView from './ValueChangeView';
+import FlagsChangeView from './FlagsChangeView';
 
 interface PropertyDiffCardProps {
     name: string;
@@ -15,14 +16,6 @@ const PropertyDiffCard: React.FC<PropertyDiffCardProps> = ({
     diff,
     prefix = 'Property'
 }) => {
-    const renderField = <T extends string | number | null>(
-        label: string,
-        change: ValueChange<T> | FlagsChange<string> | undefined
-    ) => {
-        if (!change) return null;
-        return <p>{label}: {change.From ?? ''} → {change.To ?? ''}</p>;
-    };
-
     return (
         <ExpandableCard
             title={`${prefix}: ${name}`}
@@ -31,7 +24,7 @@ const PropertyDiffCard: React.FC<PropertyDiffCardProps> = ({
                 gap: 8,
             }}
         >
-            {renderField('Type', diff.Type)}
+            <FlagsChangeView label='Flags' change={diff.PropertyFlags} />
             <ValueChangeView label='Type' change={diff.Type} />
             <ValueChangeView label='StructClass' change={diff.StructClass} />
             <ValueChangeView label='PropertyClass' change={diff.PropertyClass} />

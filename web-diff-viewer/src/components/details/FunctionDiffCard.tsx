@@ -2,6 +2,7 @@ import React from 'react';
 import ExpandableCard from './ExpandableCard';
 import type {FunctionDiff} from '../../diffs/types';
 import PropertyDiffList from './PropertyDiffList';
+import FlagsChangeView from './FlagsChangeView';
 
 interface FunctionDiffCardProps {
     name: string;
@@ -17,7 +18,7 @@ const FunctionDiffCard: React.FC<FunctionDiffCardProps> = ({name, diff}) => {
                 gap: 8,
             }}
         >
-            <p>Flags: {diff.FunctionFlags?.From || ''} → {diff.FunctionFlags?.To || ''}</p>
+            <FlagsChangeView label='Flags' change={diff.FunctionFlags} />
             <PropertyDiffList properties={diff.InputProperties} />
             <PropertyDiffList properties={diff.OutputProperties} />
         </ExpandableCard>

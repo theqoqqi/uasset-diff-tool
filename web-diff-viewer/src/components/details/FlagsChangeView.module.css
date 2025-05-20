@@ -1,0 +1,36 @@
+
+.flagListsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 4px 0;
+}
+
+.flagListField {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.flagList {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.flag {
+    padding: 4px 8px;
+    border-radius: 4px;
+
+    font-family: monospace;
+}
+
+.flag.added {
+    background-color: #e8f5e9;
+}
+
+.flag.removed {
+    background-color: #ffebee;
+}
