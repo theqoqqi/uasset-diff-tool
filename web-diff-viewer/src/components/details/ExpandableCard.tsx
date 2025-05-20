@@ -17,9 +17,20 @@ const ExpandableCard: React.FC<ExpandableCardProps> = ({
 
     const toggleOpen = () => setOpen(!open);
 
+    const getStatusClass = (status?: DiffType) => {
+        if (!status) {
+            return '';
+        }
+
+        return styles[status.toLowerCase() as Lowercase<DiffType>];
+    };
+
     return (
         <div className={styles.wrapper}>
-            <div className={styles.summary} onClick={toggleOpen}>
+            <div
+                className={`${styles.summary} ${getStatusClass(status)}`}
+                onClick={toggleOpen}
+            >
                 {title} {status && `(${status})`}
             </div>
             {open && (
