@@ -25,19 +25,19 @@ const DetailsView: React.FC<DetailsViewProps> = ({ asset }) => {
                 <p>Path: {asset.Path?.From || ''} → {asset.Path?.To || ''}</p>
             </div>
 
-            {Object.entries(asset.Properties ?? {}).map(([name, prop]) => (
+            {Object.entries(asset.Properties ?? {}).map(([name, diff]) => (
                 <PropertyDiffCard
                     key={name}
                     name={name}
-                    data={prop as PropertyDiff}
+                    diff={diff}
                 />
             ))}
 
-            {Object.entries(asset.Functions ?? {}).map(([name, fn]) => (
+            {Object.entries(asset.Functions ?? {}).map(([name, diff]) => (
                 <FunctionDiffCard
                     key={name}
                     name={name}
-                    data={fn as FunctionDiff}
+                    diff={diff}
                 />
             ))}
         </div>

@@ -1,16 +1,16 @@
 import React from 'react';
 import ExpandableCard from './ExpandableCard';
-import type { PropertyDiff, ValueChange, FlagsChange } from '../../diffs/types';
+import type {FlagsChange, PropertyDiff, ValueChange} from '../../diffs/types';
 
 interface PropertyDiffCardProps {
     name: string;
-    data: PropertyDiff;
+    diff: PropertyDiff;
     prefix?: string;
 }
 
 const PropertyDiffCard: React.FC<PropertyDiffCardProps> = ({
     name,
-    data,
+    diff,
     prefix = 'Property'
 }) => {
     const renderField = <T extends string | number | null>(
@@ -24,18 +24,18 @@ const PropertyDiffCard: React.FC<PropertyDiffCardProps> = ({
     return (
         <ExpandableCard
             title={`${prefix}: ${name}`}
-            status={data.DiffType}
+            status={diff.DiffType}
         >
-            {renderField('Type', data.Type)}
-            {renderField('StructClass', data.StructClass)}
-            {renderField('PropertyClass', data.PropertyClass)}
-            {renderField('ArrayDim', data.ArrayDim)}
-            {renderField('Flags', data.PropertyFlags)}
-            {Object.entries(data.InnerProperties ?? {}).map(([innerName, innerData]) => (
+            {renderField('Type', diff.Type)}
+            {renderField('StructClass', diff.StructClass)}
+            {renderField('PropertyClass', diff.PropertyClass)}
+            {renderField('ArrayDim', diff.ArrayDim)}
+            {renderField('Flags', diff.PropertyFlags)}
+            {Object.entries(diff.InnerProperties ?? {}).map(([innerName, innerData]) => (
                 <PropertyDiffCard
                     key={innerName}
                     name={innerName}
-                    data={innerData}
+                    diff={innerData}
                     prefix="Inner property"
                 />
             ))}
