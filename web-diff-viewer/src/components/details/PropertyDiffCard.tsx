@@ -26,6 +26,9 @@ const PropertyDiffCard: React.FC<PropertyDiffCardProps> = ({
         <ExpandableCard
             title={`${prefix}: ${name}`}
             status={diff.DiffType}
+            contentStyle={{
+                gap: 8,
+            }}
         >
             {renderField('Type', diff.Type)}
             {renderField('StructClass', diff.StructClass)}

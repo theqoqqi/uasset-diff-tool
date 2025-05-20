@@ -6,12 +6,14 @@ interface ExpandableCardProps {
     title: string;
     status?: DiffType;
     children: React.ReactNode;
+    contentStyle?: React.CSSProperties;
 }
 
 const ExpandableCard: React.FC<ExpandableCardProps> = ({
     title,
     status,
-    children
+    children,
+    contentStyle,
 }) => {
     const [open, setOpen] = useState(false);
 
@@ -34,7 +36,7 @@ const ExpandableCard: React.FC<ExpandableCardProps> = ({
                 {title} {status && `(${status})`}
             </div>
             {open && (
-                <div className={styles.content}>
+                <div className={styles.content} style={contentStyle}>
                     {children}
                 </div>
             )}

@@ -13,6 +13,9 @@ const FunctionDiffCard: React.FC<FunctionDiffCardProps> = ({name, diff}) => {
         <ExpandableCard
             title={`Function: ${name}`}
             status={diff.DiffType}
+            contentStyle={{
+                gap: 8,
+            }}
         >
             <p>Flags: {diff.FunctionFlags?.From || ''} → {diff.FunctionFlags?.To || ''}</p>
             <PropertyDiffList properties={diff.InputProperties} />
