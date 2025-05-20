@@ -24,6 +24,12 @@ public class UAssetDiffCommand : RootCommand {
             description: "If set, write diff to this file; otherwise write to console."
     ).ExistingOrCreateableFile();
 
+    public static readonly Option<string?> JsonOutputPath = new Option<string?>(
+            aliases: ["--json-output", "-j"],
+            getDefaultValue: () => null,
+            description: "If set, also writes a detailed JSON report of the diffs to the specified file."
+    ).ExistingOrCreateableFile();
+
     public static readonly Option<FileInfo?> RenamedFiles = new Option<FileInfo?>(
             aliases: ["--renamed-files", "-r"],
             description: "File with old->new asset path mappings (space separated)."
@@ -61,6 +67,7 @@ public class UAssetDiffCommand : RootCommand {
         Add(PathA);
         Add(PathB);
         Add(OutputPath);
+        Add(JsonOutputPath);
         Add(RenamedFiles);
         Add(FilterByDeps);
         Add(DiffTypes);
@@ -81,6 +88,8 @@ public class UAssetDiffCommand : RootCommand {
         public readonly string PathB = result.GetValueForArgument(UAssetDiffCommand.PathB);
 
         public readonly string? OutputPath = result.GetValueForOption(UAssetDiffCommand.OutputPath);
+
+        public readonly string? JsonOutputPath = result.GetValueForOption(UAssetDiffCommand.JsonOutputPath);
 
         public readonly FileInfo? RenamedFiles = result.GetValueForOption(UAssetDiffCommand.RenamedFiles);
 

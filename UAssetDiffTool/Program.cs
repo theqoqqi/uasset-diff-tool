@@ -20,21 +20,25 @@ internal static class Program {
         var assetsA = context.AssetsA;
         var assetsB = context.AssetsB;
         var diffPrinter = context.DiffPrinter;
+        var jsonDiffWriter = context.JsonDiffWriter;
         var renamedFiles = context.RenamedFiles;
         var filterByDeps = context.FilterByDeps;
         var blueprintsOnly = context.BlueprintsOnly;
 
         if (context.IsSingleFileDiff) {
             var assetDiff = CompareSingleAsset(context.AssetA!, context.AssetB!);
-            
+
             diffPrinter.PrintDiff(assetDiff);
+            jsonDiffWriter?.WriteJson(assetDiff);
+
             return;
         }
-        
+
         var assetDiffs = CompareAssets(assetsA!, assetsB!, renamedFiles, blueprintsOnly);
         var filteredAssetDiffs = FilterAssetDiffs(assetDiffs, filterByDeps);
 
         diffPrinter.PrintDiffs(filteredAssetDiffs.Values);
+        jsonDiffWriter?.WriteJson(filteredAssetDiffs);
     }
 
     private static Dictionary<string, AssetDiff> FilterAssetDiffs(

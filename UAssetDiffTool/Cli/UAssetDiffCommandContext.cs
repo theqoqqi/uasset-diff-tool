@@ -2,6 +2,7 @@
 using UAssetAPI;
 using UAssetAPI.UnrealTypes;
 using UAssetDiffTool.Diffs;
+using UAssetDiffTool.Diffs.Json;
 
 namespace UAssetDiffTool.Cli {
 
@@ -19,6 +20,8 @@ namespace UAssetDiffTool.Cli {
 
         public readonly DiffPrinter DiffPrinter;
 
+        public readonly JsonDiffWriter? JsonDiffWriter;
+
         public readonly Dictionary<string, string> RenamedFiles;
 
         public readonly HashSet<string>? FilterByDeps;
@@ -32,6 +35,7 @@ namespace UAssetDiffTool.Cli {
             AssetsA = CollectAssets(symbols.PathA);
             AssetsB = CollectAssets(symbols.PathB);
             DiffPrinter = CreateDiffPrinter(symbols.OutputPath, symbols.DiffTypes, symbols.ExpandAddedItems);
+            JsonDiffWriter = CreateJsonDiffWriter(symbols.JsonOutputPath);
             RenamedFiles = ParseRenamedFiles(symbols.RenamedFiles);
             FilterByDeps = ParseDependencyFile(symbols.FilterByDeps);
             BlueprintsOnly = symbols.BlueprintsOnly;
@@ -66,6 +70,14 @@ namespace UAssetDiffTool.Cli {
 
         private static DiffPrinter CreateDiffPrinter(string? outputPath, DiffType[] diffTypes, bool expandAddedItems) {
             return new DiffPrinter(GetWriter(outputPath), diffTypes, expandAddedItems);
+        }
+
+        private JsonDiffWriter? CreateJsonDiffWriter(string? jsonOutputPath) {
+            if (jsonOutputPath is null) {
+                return null;
+            }
+
+            return new JsonDiffWriter(jsonOutputPath);
         }
 
         private static TextWriter GetWriter(string? outputPath) {
