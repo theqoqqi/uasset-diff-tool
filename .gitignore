@@ -1,0 +1,10 @@
+
+/UAssetDiffTool/TestData
+/UAssetDiffTool/Output
+
+[Bb]in/
+[Oo]bj/
+
+.idea
+*.user
+*.DotSettings
