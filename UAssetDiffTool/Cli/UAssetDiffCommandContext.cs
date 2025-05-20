@@ -65,8 +65,11 @@ namespace UAssetDiffTool.Cli {
 
             var assets = new ConcurrentDictionary<string, UAsset>();
             var paths = Directory.GetFiles(path, "*.uasset", SearchOption.AllDirectories);
+            var totalAmount = paths.Length;
+            var loadedAmount = 0;
 
             Parallel.ForEach(paths, assetPath => {
+                Console.WriteLine($"{loadedAmount++} / {totalAmount}. Reading {assetPath}...");
                 AddAsset(assets, assetPath);
             });
 

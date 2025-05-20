@@ -26,19 +26,27 @@ internal static class Program {
         var blueprintsOnly = context.BlueprintsOnly;
 
         if (context.IsSingleFileDiff) {
+            Console.WriteLine("Gathering diff for single asset pair...");
+
             var assetDiff = CompareSingleAsset(context.AssetA!, context.AssetB!);
 
             diffPrinter.PrintDiff(assetDiff);
             jsonDiffWriter?.WriteJson(assetDiff);
+            
+            Console.WriteLine("Diffs successfully gathered");
 
             return;
         }
+        
+        Console.WriteLine($"Gathering diff for {assetsA!.Count} and {assetsB!.Count} assets...");
 
         var assetDiffs = CompareAssets(assetsA!, assetsB!, renamedFiles, blueprintsOnly);
         var filteredAssetDiffs = FilterAssetDiffs(assetDiffs, filterByDeps);
 
         diffPrinter.PrintDiffs(filteredAssetDiffs.Values);
         jsonDiffWriter?.WriteJson(filteredAssetDiffs);
+            
+        Console.WriteLine("Diffs successfully gathered");
     }
 
     private static Dictionary<string, AssetDiff> FilterAssetDiffs(
@@ -86,6 +94,8 @@ internal static class Program {
         if (renameMap.ContainsValue(shortPath)) {
             return null;
         }
+
+        Console.WriteLine($"Gathering diff for {shortPath}...");
 
         var shortPathA = shortPath;
         var shortPathB = renameMap.GetValueOrDefault(shortPath, shortPath);
