@@ -26,7 +26,8 @@ public class UAssetDiffCommand : RootCommand {
     public static readonly Option<string?> JsonOutputPath = new Option<string?>(
             aliases: ["--json-output", "-j"],
             getDefaultValue: () => null,
-            description: "If set, also writes a detailed JSON report of the diffs to the specified file."
+            description: "If set, also writes a detailed JSON report of the diffs to the specified file." +
+                         "\nThe resulting JSON can be visualized using the web viewer (see README on GitHub)."
     ).ExistingOrCreateableFile();
 
     public static readonly Option<bool> PrettyJson = new Option<bool>(
