@@ -26,7 +26,7 @@ const AssetTreeItem: React.FC<AssetTreeItemProps> = ({ item, onSelect }) => {
     return (
         <div className={styles.item}>
             <div
-                className={`${styles.label} ${styles[statusClass]}`}
+                className={`${styles.header} ${styles[statusClass]}`}
                 onClick={handleClick}
             >
                 <span className={styles.icon}>
@@ -39,7 +39,9 @@ const AssetTreeItem: React.FC<AssetTreeItemProps> = ({ item, onSelect }) => {
                         <span className={styles.assetIcon}>📄</span>
                     )}
                 </span>
-                {item.name}
+                <span className={styles.label}>
+                    {item.name}
+                </span>
             </div>
             {isFolder && open && (
                 <div className={styles.children}>

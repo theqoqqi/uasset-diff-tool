@@ -3,10 +3,13 @@
     margin-left: 12px;
 }
 
-.label {
+.header {
     display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 6px;
+
+    flex: 1;
 
     padding: 4px;
 
@@ -32,6 +35,10 @@
 .assetIcon {
     font-size: 0.9em;
     color: #666;
+}
+
+.label {
+    flex: 1;
 }
 
 .children {
