@@ -7,6 +7,8 @@ This tool was developed to help modders track changes between game updates and r
 their own Unreal Engine 4 projects. Since the game does not provide any modding API, assets often need
 to be recreated manually. This tool streamlines the process by highlighting differences.
 
+You can also explore the results using the [**web viewer**](https://theqoqqi.github.io/uasset-diff-tool).
+
 ## Features
 
 - Compares individual `.uasset` files or directories.
@@ -14,7 +16,7 @@ to be recreated manually. This tool streamlines the process by highlighting diff
 - Provides option to handle renamed files.
 - Optionally focuses on Blueprint assets only.
 - Outputs results to console or file.
-- Supports output to JSON.
+- Supports output to JSON (it could be opened using [web viewer](https://theqoqqi.github.io/uasset-diff-tool)).
 
 ## Installation
 
@@ -50,6 +52,7 @@ UAssetDiffTool.exe <pathA> <pathB> [options]
 
 - `--json-output <file>`
   If set, also writes a detailed JSON report of the diffs to the specified file.
+  The resulting JSON can be visualized using the [web viewer](https://theqoqqi.github.io/uasset-diff-tool).
 
 - `--pretty-json`
   Enable indented (pretty) formatting for JSON output.
@@ -114,6 +117,9 @@ UAssetDiffTool.exe <pathA> <pathB> [options]
      --filter-by-deps project-deps.txt \
      --renamed-files renamed-files.txt
    ```
+   
+7. View results:
+    - Open the JSON file in the [web viewer](https://theqoqqi.github.io/uasset-diff-tool) to browse diffs interactively.
 
 ## Example Output
 
