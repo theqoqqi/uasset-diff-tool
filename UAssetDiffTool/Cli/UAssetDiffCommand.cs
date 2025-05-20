@@ -30,6 +30,11 @@ public class UAssetDiffCommand : RootCommand {
             description: "If set, also writes a detailed JSON report of the diffs to the specified file."
     ).ExistingOrCreateableFile();
 
+    public static readonly Option<bool> PrettyJson = new Option<bool>(
+            aliases: ["--pretty-json", "-J"],
+            description: "Enable indented (pretty) formatting for JSON output."
+    );
+
     public static readonly Option<FileInfo?> RenamedFiles = new Option<FileInfo?>(
             aliases: ["--renamed-files", "-r"],
             description: "File with old->new asset path mappings (space separated)."
@@ -68,6 +73,7 @@ public class UAssetDiffCommand : RootCommand {
         Add(PathB);
         Add(OutputPath);
         Add(JsonOutputPath);
+        Add(PrettyJson);
         Add(RenamedFiles);
         Add(FilterByDeps);
         Add(DiffTypes);
@@ -90,6 +96,8 @@ public class UAssetDiffCommand : RootCommand {
         public readonly string? OutputPath = result.GetValueForOption(UAssetDiffCommand.OutputPath);
 
         public readonly string? JsonOutputPath = result.GetValueForOption(UAssetDiffCommand.JsonOutputPath);
+
+        public readonly bool PrettyJson = result.GetValueForOption(UAssetDiffCommand.PrettyJson);
 
         public readonly FileInfo? RenamedFiles = result.GetValueForOption(UAssetDiffCommand.RenamedFiles);
 

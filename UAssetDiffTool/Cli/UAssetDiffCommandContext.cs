@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using Newtonsoft.Json;
 using UAssetAPI;
 using UAssetAPI.UnrealTypes;
 using UAssetDiffTool.Diffs;
@@ -35,7 +36,7 @@ namespace UAssetDiffTool.Cli {
             AssetsA = CollectAssets(symbols.PathA);
             AssetsB = CollectAssets(symbols.PathB);
             DiffPrinter = CreateDiffPrinter(symbols.OutputPath, symbols.DiffTypes, symbols.ExpandAddedItems);
-            JsonDiffWriter = CreateJsonDiffWriter(symbols.JsonOutputPath);
+            JsonDiffWriter = CreateJsonDiffWriter(symbols.JsonOutputPath, symbols.PrettyJson);
             RenamedFiles = ParseRenamedFiles(symbols.RenamedFiles);
             FilterByDeps = ParseDependencyFile(symbols.FilterByDeps);
             BlueprintsOnly = symbols.BlueprintsOnly;
@@ -72,12 +73,14 @@ namespace UAssetDiffTool.Cli {
             return new DiffPrinter(GetWriter(outputPath), diffTypes, expandAddedItems);
         }
 
-        private JsonDiffWriter? CreateJsonDiffWriter(string? jsonOutputPath) {
+        private JsonDiffWriter? CreateJsonDiffWriter(string? jsonOutputPath, bool prettyJson) {
             if (jsonOutputPath is null) {
                 return null;
             }
 
-            return new JsonDiffWriter(jsonOutputPath);
+            var formatting = prettyJson ? Formatting.Indented : Formatting.None;
+
+            return new JsonDiffWriter(jsonOutputPath, formatting);
         }
 
         private static TextWriter GetWriter(string? outputPath) {
