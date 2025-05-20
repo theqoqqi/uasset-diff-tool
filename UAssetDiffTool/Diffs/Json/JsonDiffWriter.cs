@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace UAssetDiffTool.Diffs.Json;
 
@@ -6,7 +7,10 @@ public class JsonDiffWriter(string path, Formatting formatting = Formatting.None
 
     public readonly JsonSerializerSettings Settings = new JsonSerializerSettings {
             ContractResolver = new DiffContractResolver(),
-            Converters = { new ChangeableDictionaryConverter() },
+            Converters = {
+                    new ChangeableDictionaryConverter(),
+                    new StringEnumConverter(),
+            },
             NullValueHandling = NullValueHandling.Ignore,
             Formatting = formatting,
     };
