@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/static/css/main.95b0689a.css",
-    "main.js": "/static/js/main.194a2e65.js",
-    "index.html": "/index.html",
-    "main.95b0689a.css.map": "/static/css/main.95b0689a.css.map",
-    "main.194a2e65.js.map": "/static/js/main.194a2e65.js.map"
+    "main.css": "/uasset-diff-tool/static/css/main.95b0689a.css",
+    "main.js": "/uasset-diff-tool/static/js/main.194a2e65.js",
+    "index.html": "/uasset-diff-tool/index.html",
+    "main.95b0689a.css.map": "/uasset-diff-tool/static/css/main.95b0689a.css.map",
+    "main.194a2e65.js.map": "/uasset-diff-tool/static/js/main.194a2e65.js.map"
   },
   "entrypoints": [
     "static/css/main.95b0689a.css",
