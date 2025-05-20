@@ -1,7 +1,7 @@
 import React from 'react';
 import ExpandableCard from './ExpandableCard';
-import PropertyDiffCard from './PropertyDiffCard';
-import type { FunctionDiff, PropertyDiff } from '../../diffs/types';
+import type {FunctionDiff} from '../../diffs/types';
+import PropertyDiffList from './PropertyDiffList';
 
 interface FunctionDiffCardProps {
     name: string;
@@ -15,22 +15,8 @@ const FunctionDiffCard: React.FC<FunctionDiffCardProps> = ({name, diff}) => {
             status={diff.DiffType}
         >
             <p>Flags: {diff.FunctionFlags?.From || ''} → {diff.FunctionFlags?.To || ''}</p>
-            {Object.entries(diff.InputProperties ?? {}).map(([propName, propData]) => (
-                <PropertyDiffCard
-                    key={`in-${propName}`}
-                    name={propName}
-                    diff={propData as PropertyDiff}
-                    prefix="In"
-                />
-            ))}
-            {Object.entries(diff.OutputProperties ?? {}).map(([propName, propData]) => (
-                <PropertyDiffCard
-                    key={`out-${propName}`}
-                    name={propName}
-                    diff={propData as PropertyDiff}
-                    prefix="Out"
-                />
-            ))}
+            <PropertyDiffList properties={diff.InputProperties} />
+            <PropertyDiffList properties={diff.OutputProperties} />
         </ExpandableCard>
     );
 };

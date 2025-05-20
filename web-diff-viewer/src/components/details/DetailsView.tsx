@@ -1,8 +1,8 @@
 import React from 'react';
-import FunctionDiffCard from './FunctionDiffCard';
-import PropertyDiffCard from './PropertyDiffCard';
 import styles from './DetailsView.module.css';
-import type { AssetDiff, PropertyDiff, FunctionDiff } from '../../diffs/types';
+import type {AssetDiff} from '../../diffs/types';
+import PropertyDiffList from './PropertyDiffList';
+import FunctionDiffList from './FunctionDiffList';
 
 interface DetailsViewProps {
     asset: AssetDiff | null;
@@ -24,22 +24,8 @@ const DetailsView: React.FC<DetailsViewProps> = ({ asset }) => {
                 <p>Status: {asset.DiffType}</p>
                 <p>Path: {asset.Path?.From || ''} → {asset.Path?.To || ''}</p>
             </div>
-
-            {Object.entries(asset.Properties ?? {}).map(([name, diff]) => (
-                <PropertyDiffCard
-                    key={name}
-                    name={name}
-                    diff={diff}
-                />
-            ))}
-
-            {Object.entries(asset.Functions ?? {}).map(([name, diff]) => (
-                <FunctionDiffCard
-                    key={name}
-                    name={name}
-                    diff={diff}
-                />
-            ))}
+            <PropertyDiffList properties={asset.Properties} />
+            <FunctionDiffList functions={asset.Functions} />
         </div>
     );
 };
