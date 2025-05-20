@@ -7,6 +7,10 @@ interface PropertyListProps {
 }
 
 const PropertyDiffList: React.FC<PropertyListProps> = ({ properties }) => {
+    if (!properties || Object.keys(properties).length === 0) {
+        return null;
+    }
+
     return (
         <div>
             {Object.entries(properties ?? {}).map(([propName, diff]) => (

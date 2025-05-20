@@ -7,6 +7,10 @@ interface FunctionListProps {
 }
 
 const FunctionDiffList: React.FC<FunctionListProps> = ({ functions }) => {
+    if (!functions || Object.keys(functions).length === 0) {
+        return null;
+    }
+
     return (
         <div>
             {Object.entries(functions ?? {}).map(([name, diff]) => (
