@@ -34,13 +34,15 @@ public class AssetDiff(DiffType diffType, string name) : Diff(diffType, name) {
     public static AssetDiff Create(DiffContext context, string assetName, UAsset? assetA, UAsset? assetB) {
         var diffType = GetInitialDiffType(assetA, assetB);
         var diff = new AssetDiff(diffType, assetName);
+        
+        diff.Path = ValueChange<string>.Create(context.shortPathA, context.shortPathB);
 
         if (CanBeTreatedAsBlueprint(assetA) && CanBeTreatedAsBlueprint(assetB)) {
-            diff.Path = ValueChange<string>.Create(context.shortPathA, context.shortPathB);
             diff.Properties = PropertyDiff.Create(context, assetA, assetB);
             diff.Functions = FunctionDiff.Create(context, assetA, assetB);
-            diff.ResolveDiffType();
         }
+        
+        diff.ResolveDiffType();
 
         return diff;
     }
