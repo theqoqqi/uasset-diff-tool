@@ -41,30 +41,31 @@ namespace UAssetDiffTool.Cli {
             var diffTypes = parseResult.GetValueForOption(UAssetDiffCommand.DiffTypes) ?? [];
             var blueprintsOnly = parseResult.GetValueForOption(UAssetDiffCommand.BlueprintsOnly);
             var expandAddedItems = parseResult.GetValueForOption(UAssetDiffCommand.ExpandAddedItems);
-            
-            IsSingleFileDiff = IsFiles(pathA, pathB);
-            AssetA = GetSingleAsset(pathA);
-            AssetB = GetSingleAsset(pathB);
-            AssetsA = CollectAssets(pathA);
-            AssetsB = CollectAssets(pathB);
+
             DiffPrinter = CreateDiffPrinter(outputPath, diffTypes, expandAddedItems);
             JsonDiffWriter = CreateJsonDiffWriter(jsonOutputPath, prettyJson);
             RenamedFiles = ParseRenamedFiles(renamedFiles);
             FilterByDeps = ParseDependencyFile(filterByDeps);
             BlueprintsOnly = blueprintsOnly;
+
+            IsSingleFileDiff = IsFiles(pathA, pathB);
+            AssetA = GetSingleAsset(pathA);
+            AssetB = GetSingleAsset(pathB);
+            AssetsA = CollectAssets(pathA, FilterByDeps);
+            AssetsB = CollectAssets(pathB, ApplyRenames(FilterByDeps, RenamedFiles));
         }
 
         private UAsset? GetSingleAsset(string path) {
             return IsSingleFileDiff ? GetAsset(path) : null;
         }
 
-        private Dictionary<string, UAsset>? CollectAssets(string path) {
+        private Dictionary<string, UAsset>? CollectAssets(string path, ICollection<string>? filteredPaths) {
             if (IsSingleFileDiff) {
                 return null;
             }
 
             var assets = new ConcurrentDictionary<string, UAsset>();
-            var paths = Directory.GetFiles(path, "*.uasset", SearchOption.AllDirectories);
+            var paths = GetAssetPaths(path, filteredPaths);
             var totalAmount = paths.Length;
             var loadedAmount = 0;
 
@@ -74,6 +75,20 @@ namespace UAssetDiffTool.Cli {
             });
 
             return new Dictionary<string, UAsset>(assets);
+        }
+
+        private static string[] GetAssetPaths(string path, ICollection<string>? filteredPaths) {
+            var paths = Directory.GetFiles(path, "*.uasset", SearchOption.AllDirectories);
+
+            if (filteredPaths is null) {
+                return paths;
+            }
+            
+            return paths.Where(IsFiltered).ToArray();
+
+            bool IsFiltered(string p) {
+                return filteredPaths.Contains(GetShortAssetPath(p));
+            }
         }
 
         private static void AddAsset(IDictionary<string, UAsset> assets, string path) {
@@ -152,6 +167,15 @@ namespace UAssetDiffTool.Cli {
             }
 
             return result;
+        }
+
+        private static HashSet<string>? ApplyRenames(
+                IEnumerable<string>? paths,
+                IReadOnlyDictionary<string, string> renamedFiles
+        ) {
+            return paths?
+                    .Select(path => renamedFiles.GetValueOrDefault(path, path))
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
         }
 
         private static string GetShortAssetPath(string relativePath) {
