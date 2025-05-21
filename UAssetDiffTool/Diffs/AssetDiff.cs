@@ -24,6 +24,7 @@ public class AssetDiff(DiffType diffType, string name) : Diff(diffType, name) {
     protected override IList<IChangeable> CollectChildren() {
         var children = new List<IChangeable>();
 
+        children.Add(Path);
         children.AddRange(Functions.Values);
         children.AddRange(Properties.Values);
 
