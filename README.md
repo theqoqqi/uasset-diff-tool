@@ -1,4 +1,4 @@
-﻿
+
 # UAsset Diff Tool
 
 A command-line tool for comparing `.uasset` files to identify differences between two versions of a game’s assets.
@@ -7,7 +7,9 @@ This tool was developed to help modders track changes between game updates and r
 their own Unreal Engine 4 projects. Since the game does not provide any modding API, assets often need
 to be recreated manually. This tool streamlines the process by highlighting differences.
 
-You can also explore the results using the [**web viewer**](https://theqoqqi.github.io/uasset-diff-tool).
+You can also explore the results using the [**web viewer**](https://theqoqqi.github.io/uasset-diff-tool):
+
+![image](https://github.com/user-attachments/assets/eea8aafe-8f01-452b-bdf8-c3571a7cfb9f)
 
 ## Features
 
